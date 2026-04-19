@@ -1,0 +1,11 @@
+{
+  "name": "sentinelops-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Frontend dashboard for SentinelOps",
+  "scripts": {
+    "dev": "echo frontend scaffold ready",
+    "build": "echo build scaffold ready",
+    "test": "echo test scaffold ready"
+  }
+}
