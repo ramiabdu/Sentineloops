@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from app.api.health import router
+from app.core.config import settings
 
-app = FastAPI(title="Sentineloops API")
+app = FastAPI(title=settings.APP_NAME)
 
 app.include_router(router)
