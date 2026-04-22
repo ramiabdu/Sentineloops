@@ -4,11 +4,11 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-if [[ ! -f .env ]]; then
-  cp .env.example .env
-  echo "Created .env from .env.example"
+if [[ ! -f backend/.env ]]; then
+  cp backend/.env.example backend/.env
+  echo "Created backend/.env from backend/.env.example"
 else
-  echo ".env already exists"
+  echo "backend/.env already exists"
 fi
 
 echo "SentinelOps bootstrap complete"

@@ -1,4 +1,4 @@
-# SentinelOOps
+# SentinelOps
 
 SentinelOps is a production-style **Cloud Security Posture Management (CSPM)** MVP designed to detect, prioritize, and manage cloud security misconfigurations across multiple cloud accounts.
 
@@ -25,8 +25,8 @@ Today's deliverable focuses on the **foundation**:
 - MIT license
 - architecture/threat model/decisions docs
 - backend skeleton prepared for FastAPI
-- frontend and worker placeholders created
-- Docker/Terraform/GitHub Actions scaffolding added
+- frontend dashboard skeleton created
+- Docker/Terraform foundations added
 - one command local bootstrap path defined
 
 ## Planned architecture
@@ -55,12 +55,12 @@ sentinelops/
 - Celery or RQ (planned)
 
 ### Frontend
-- React + TypeScript + Vite (planned)
+- React + TypeScript + Vite
 - Dashboard oriented component layout
 
 ### Infrastructure
 - Docker Compose for local development
-- Terraform module skeletons for baseline cloud resources
+- Terraform modules for baseline cloud resources
 - GitHub Actions for CI
 
 ## Repository structure
@@ -93,14 +93,14 @@ sentinelops/
 ### 1) Bootstrap environment
 
 ```bash
-cp .env.example .env
+cp backend/.env.example backend/.env
 ```
 
 ### 2) Review docs
 
 Start with:
 - `docs/architecture.md`
-- `docs/threat model.md`
+- `docs/threat-model.md`
 - `docs/decisions.md`
 - `docs/roadmap.md`
 
@@ -111,7 +111,7 @@ make bootstrap
 make tree
 ```
 
-Dockerized local runtime is scaffolded and will be expanded as backend/frontend services become executable.
+Dockerized local runtime starts the backend API with PostgreSQL and Redis.
 
 ## MVP scope from specification
 

@@ -5,7 +5,7 @@ PROJECT_NAME=sentinelops
 help:
 	@echo "Available targets:"
 	@echo "  make tree       - show repo structure"
-	@echo "  make bootstrap  - copy .env.example to .env if missing"
+	@echo "  make bootstrap  - copy backend/.env.example to backend/.env if missing"
 	@echo "  make fmt        - format backend code"
 	@echo "  make lint       - lint backend code"
 	@echo "  make test       - run backend tests"
@@ -16,18 +16,18 @@ tree:
 	@find . -maxdepth 3 -type d | sort
 
 bootstrap:
-	@test -f .env || cp .env.example .env
+	@test -f backend/.env || cp backend/.env.example backend/.env
 	@echo "Environment bootstrapped."
 
 fmt:
-	cd backend && python -m black app tests || true
-	cd backend && python -m isort app tests || true
+	cd backend && python -m black app ../tests
+	cd backend && python -m isort app ../tests
 
 lint:
-	cd backend && python -m ruff check app tests || true
+	cd backend && python -m ruff check app ../tests
 
 test:
-	cd backend && python -m pytest ../tests/backend -q || true
+	cd backend && python -m pytest ../tests/backend -q
 
 up:
 	docker compose -f docker/docker-compose.yml up --build

@@ -13,7 +13,7 @@ app = FastAPI(title=settings.APP_NAME)
 
 @app.on_event("startup")
 def on_startup() -> None:
-    logger.info("Starting Sentinelops API")
+    logger.info("Starting SentinelOps API")
     logger.info("Environment: %s", settings.ENVIRONMENT)
     logger.info("Debug mode: %s", settings.DEBUG)
 
