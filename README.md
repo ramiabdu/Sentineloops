@@ -1,4 +1,4 @@
-# SentinelOps
+# SentinelOOps
 
 SentinelOps is a production-style **Cloud Security Posture Management (CSPM)** MVP designed to detect, prioritize, and manage cloud security misconfigurations across multiple cloud accounts.
 
@@ -6,15 +6,15 @@ This repository is intentionally structured as a **monorepo** so backend, fronte
 
 ## Why this project exists
 
-The goal is to build a serious portfolio-grade system that demonstrates:
+The goal is to build a serious portfolio grade system that demonstrates:
 - clean architecture
-- security-minded backend design
+- security minded backend design
 - scalable scanner/plugin foundations
 - observable async workflows
 - infrastructure awareness
 - strong documentation and developer ownership
 
-The project scope and 30-day roadmap are based on the supplied SentinelOps specification and GitHub fire plan.
+The project scope and 30 day roadmap are based on the supplied SentinelOps specification.
 
 ## Day 1 outcome
 
@@ -27,7 +27,7 @@ Today's deliverable focuses on the **foundation**:
 - backend skeleton prepared for FastAPI
 - frontend and worker placeholders created
 - Docker/Terraform/GitHub Actions scaffolding added
-- one-command local bootstrap path defined
+- one command local bootstrap path defined
 
 ## Planned architecture
 
@@ -56,7 +56,7 @@ sentinelops/
 
 ### Frontend
 - React + TypeScript + Vite (planned)
-- Dashboard-oriented component layout
+- Dashboard oriented component layout
 
 ### Infrastructure
 - Docker Compose for local development
@@ -100,7 +100,7 @@ cp .env.example .env
 
 Start with:
 - `docs/architecture.md`
-- `docs/threat-model.md`
+- `docs/threat model.md`
 - `docs/decisions.md`
 - `docs/roadmap.md`
 
@@ -115,7 +115,7 @@ Dockerized local runtime is scaffolded and will be expanded as backend/frontend 
 
 ## MVP scope from specification
 
-The target MVP includes multi-account onboarding, a security scanning engine, findings persistence, risk scoring, REST APIs, background workers, dashboard UI, auth/RBAC, alerts, audit logs, CI/CD, local Docker, Terraform, and professional documentation.
+The target MVP includes multi account onboarding, a security scanning engine, findings persistence, risk scoring, REST APIs, background workers, dashboard UI, auth/RBAC, alerts, audit logs, CI/CD, local Docker, Terraform, and professional documentation.
 
 Required scanners include:
 - public S3 buckets
@@ -126,7 +126,7 @@ Required scanners include:
 
 ## Development roadmap
 
-The full 30-day plan progresses from repo setup, backend foundations, database/migrations, scanners, persistence, async jobs, frontend dashboard, auth/RBAC, CI, and release polish.
+The full 30 day plan progresses from repo setup, backend foundations, database/migrations, scanners, persistence, async jobs, frontend dashboard, auth/RBAC, CI, and release polish.
 
 ## Definition of done
 
@@ -153,3 +153,11 @@ The repository aims to satisfy the provided definition of done:
 ## License
 
 MIT
+## Current endpoints
+
+- `/`
+- `/health`
+
+## Runtime behavior
+
+Application logs startup metadata including environment and debug mode.
