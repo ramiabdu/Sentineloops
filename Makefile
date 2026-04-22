@@ -1,11 +1,12 @@
 PROJECT_NAME=sentinelops
 
-.PHONY: help tree bootstrap fmt lint test up down
+.PHONY: help tree bootstrap run-backend fmt lint test up down
 
 help:
 	@echo "Available targets:"
 	@echo "  make tree       - show repo structure"
 	@echo "  make bootstrap  - copy backend/.env.example to backend/.env if missing"
+	@echo "  make run-backend - start backend API locally"
 	@echo "  make fmt        - format backend code"
 	@echo "  make lint       - lint backend code"
 	@echo "  make test       - run backend tests"
@@ -18,6 +19,9 @@ tree:
 bootstrap:
 	@test -f backend/.env || cp backend/.env.example backend/.env
 	@echo "Environment bootstrapped."
+
+run-backend:
+	cd backend && python -m uvicorn app.main:app --reload
 
 fmt:
 	cd backend && python -m black app ../tests
