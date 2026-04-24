@@ -28,11 +28,13 @@ class Scan(UUIDPrimaryKeyMixin, TimestampedModel, Base):
     account_id: Mapped[UUID] = mapped_column(
         ForeignKey("accounts.id", ondelete="CASCADE"),
         nullable=False,
+        index=True,
     )
     status: Mapped[ScanStatus] = mapped_column(
-        Enum(ScanStatus),
+        Enum(ScanStatus, name="scan_status"),
         nullable=False,
         default=ScanStatus.QUEUED,
+        index=True,
     )
     triggered_by: Mapped[str | None] = mapped_column(String(255))
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
