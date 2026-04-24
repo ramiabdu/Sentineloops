@@ -32,12 +32,17 @@ class Account(UUIDPrimaryKeyMixin, TimestampedModel, Base):
     )
 
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    cloud_provider: Mapped[CloudProvider] = mapped_column(Enum(CloudProvider), nullable=False)
+    cloud_provider: Mapped[CloudProvider] = mapped_column(
+        Enum(CloudProvider, name="cloud_provider"),
+        nullable=False,
+        index=True,
+    )
     external_id: Mapped[str] = mapped_column(String(128), nullable=False)
     status: Mapped[AccountStatus] = mapped_column(
-        Enum(AccountStatus),
+        Enum(AccountStatus, name="account_status"),
         nullable=False,
         default=AccountStatus.PENDING,
+        index=True,
     )
 
     scans: Mapped[list["Scan"]] = relationship(

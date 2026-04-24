@@ -9,6 +9,8 @@ services:
       - ../:/workspace
     env_file:
       - ../backend/.env
+    environment:
+      DATABASE_URL: postgresql+psycopg://sentinelops:sentinelops@db:5432/sentinelops
     ports:
       - "8000:8000"
     depends_on:

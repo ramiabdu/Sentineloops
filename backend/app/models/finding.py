@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import enum
+from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
@@ -34,21 +35,30 @@ class Finding(UUIDPrimaryKeyMixin, TimestampedModel, Base):
     account_id: Mapped[UUID] = mapped_column(
         ForeignKey("accounts.id", ondelete="CASCADE"),
         nullable=False,
+        index=True,
     )
-    scan_id: Mapped[UUID | None] = mapped_column(ForeignKey("scans.id", ondelete="SET NULL"))
-    severity: Mapped[FindingSeverity] = mapped_column(Enum(FindingSeverity), nullable=False)
+    scan_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("scans.id", ondelete="SET NULL"),
+        index=True,
+    )
+    severity: Mapped[FindingSeverity] = mapped_column(
+        Enum(FindingSeverity, name="finding_severity"),
+        nullable=False,
+        index=True,
+    )
     status: Mapped[FindingStatus] = mapped_column(
-        Enum(FindingStatus),
+        Enum(FindingStatus, name="finding_status"),
         nullable=False,
         default=FindingStatus.OPEN,
+        index=True,
     )
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str | None] = mapped_column(Text)
     resource_id: Mapped[str] = mapped_column(String(255), nullable=False)
     resource_type: Mapped[str] = mapped_column(String(100), nullable=False)
     region: Mapped[str | None] = mapped_column(String(64))
-    scanner_name: Mapped[str] = mapped_column(String(100), nullable=False)
-    risk_score: Mapped[float | None] = mapped_column(Numeric(5, 2))
+    scanner_name: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
+    risk_score: Mapped[Decimal | None] = mapped_column(Numeric(5, 2))
     remediation: Mapped[str | None] = mapped_column(Text)
     resource_metadata: Mapped[dict[str, Any] | None] = mapped_column(JSON)
 
