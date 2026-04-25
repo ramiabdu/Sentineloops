@@ -1,6 +1,6 @@
 PROJECT_NAME=sentinelops
 
-.PHONY: help tree bootstrap run-backend db-bootstrap db-current fmt lint test up down
+.PHONY: help tree bootstrap run-backend db-bootstrap db-current fmt lint test up logs down
 
 help:
 	@echo "Available targets:"
@@ -12,7 +12,8 @@ help:
 	@echo "  make fmt        - format backend code"
 	@echo "  make lint       - lint backend code"
 	@echo "  make test       - run backend tests"
-	@echo "  make up         - start local docker stack"
+	@echo "  make up         - build and start local docker stack"
+	@echo "  make logs       - stream docker service logs"
 	@echo "  make down       - stop local docker stack"
 
 tree:
@@ -41,8 +42,11 @@ lint:
 test:
 	cd backend && python -m pytest ../tests/backend -q
 
-up:
+up: bootstrap
 	docker compose -f docker/docker-compose.yml up --build
+
+logs:
+	docker compose -f docker/docker-compose.yml logs -f
 
 down:
 	docker compose -f docker/docker-compose.yml down -v
