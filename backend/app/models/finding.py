@@ -8,7 +8,7 @@ from uuid import UUID
 from sqlalchemy import Enum, ForeignKey, JSON, Numeric, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base, TimestampedModel, UUIDPrimaryKeyMixin
+from app.models.base import Base, TimestampedModel, UUIDPrimaryKeyMixin, enum_values
 
 if TYPE_CHECKING:
     from app.models.account import Account
@@ -42,12 +42,12 @@ class Finding(UUIDPrimaryKeyMixin, TimestampedModel, Base):
         index=True,
     )
     severity: Mapped[FindingSeverity] = mapped_column(
-        Enum(FindingSeverity, name="finding_severity"),
+        Enum(FindingSeverity, name="finding_severity", values_callable=enum_values),
         nullable=False,
         index=True,
     )
     status: Mapped[FindingStatus] = mapped_column(
-        Enum(FindingStatus, name="finding_status"),
+        Enum(FindingStatus, name="finding_status", values_callable=enum_values),
         nullable=False,
         default=FindingStatus.OPEN,
         index=True,

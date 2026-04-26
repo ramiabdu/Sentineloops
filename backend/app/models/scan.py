@@ -8,7 +8,7 @@ from uuid import UUID
 from sqlalchemy import DateTime, Enum, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base, TimestampedModel, UUIDPrimaryKeyMixin
+from app.models.base import Base, TimestampedModel, UUIDPrimaryKeyMixin, enum_values
 
 if TYPE_CHECKING:
     from app.models.account import Account
@@ -31,7 +31,7 @@ class Scan(UUIDPrimaryKeyMixin, TimestampedModel, Base):
         index=True,
     )
     status: Mapped[ScanStatus] = mapped_column(
-        Enum(ScanStatus, name="scan_status"),
+        Enum(ScanStatus, name="scan_status", values_callable=enum_values),
         nullable=False,
         default=ScanStatus.QUEUED,
         index=True,

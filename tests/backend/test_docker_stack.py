@@ -23,6 +23,16 @@ def test_compose_defines_day6_services_and_healthchecks():
     assert "redis:" in compose_text
     assert "healthcheck:" in compose_text
     assert "alembic upgrade head" in compose_text
+    assert "python -m alembic" not in compose_text
+
+
+def test_makefile_uses_alembic_console_command():
+    root = Path(__file__).resolve().parents[2]
+    makefile_text = (root / "Makefile").read_text()
+
+    assert "alembic upgrade head" in makefile_text
+    assert "alembic current" in makefile_text
+    assert "python -m alembic" not in makefile_text
 
 
 def test_dockerignore_excludes_local_env_files():

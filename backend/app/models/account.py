@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import Enum, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base, TimestampedModel, UUIDPrimaryKeyMixin
+from app.models.base import Base, TimestampedModel, UUIDPrimaryKeyMixin, enum_values
 
 if TYPE_CHECKING:
     from app.models.finding import Finding
@@ -33,13 +33,13 @@ class Account(UUIDPrimaryKeyMixin, TimestampedModel, Base):
 
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     cloud_provider: Mapped[CloudProvider] = mapped_column(
-        Enum(CloudProvider, name="cloud_provider"),
+        Enum(CloudProvider, name="cloud_provider", values_callable=enum_values),
         nullable=False,
         index=True,
     )
     external_id: Mapped[str] = mapped_column(String(128), nullable=False)
     status: Mapped[AccountStatus] = mapped_column(
-        Enum(AccountStatus, name="account_status"),
+        Enum(AccountStatus, name="account_status", values_callable=enum_values),
         nullable=False,
         default=AccountStatus.PENDING,
         index=True,

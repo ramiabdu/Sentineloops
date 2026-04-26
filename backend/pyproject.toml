@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=70.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "sentinelops-backend"
 version = "0.1.0"
@@ -27,6 +31,10 @@ line-length = 100
 [tool.isort]
 profile = "black"
 line_length = 100
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+exclude = ["alembic*"]
 
 [tool.ruff]
 line-length = 100
