@@ -16,18 +16,16 @@ The goal is to build a serious portfolio grade system that demonstrates:
 
 The project scope and 30 day roadmap are based on the supplied SentinelOps specification.
 
-## Day 1 outcome
+## Current foundation state
 
-Today's deliverable focuses on the **foundation**:
-- monorepo initialized
-- clean folder layout
-- professional README
-- MIT license
-- architecture/threat model/decisions docs
-- backend skeleton prepared for FastAPI
+Days 1-7 currently establish the platform baseline:
+- monorepo initialized and documented
+- FastAPI application factory and routed API structure
+- SQLAlchemy models for accounts, scans, and findings
+- Alembic bootstrap and initial schema migration
+- local Docker Compose stack for API, PostgreSQL, and Redis
 - frontend dashboard skeleton created
-- Docker/Terraform foundations added
-- one command local bootstrap path defined
+- architecture and decision docs updated to match the codebase
 
 ## Planned architecture
 
@@ -109,6 +107,7 @@ Start with:
 ```bash
 make bootstrap
 make tree
+make up
 ```
 
 Dockerized local runtime starts the backend API with PostgreSQL and Redis.
@@ -142,13 +141,13 @@ The repository aims to satisfy the provided definition of done:
 
 ## Next implementation milestones
 
-1. FastAPI application skeleton + health endpoint
-2. configuration management and settings
-3. database models for accounts/findings/scans
-4. migrations and bootstrap
-5. scanner interface + first cloud checks
+1. account onboarding API
+2. validation schemas and error handling
+3. scanner interface and first cloud checks
+4. findings persistence flow
+5. risk scoring and findings APIs
 6. async worker execution model
-7. dashboard slices and CI hardening
+7. CI hardening and dashboard expansion
 
 ## License
 
