@@ -1,31 +1,16 @@
-import logging
-
 from fastapi import FastAPI
-from app.api.health import router
+from app.api.router import api_router
 from app.core.config import settings
+from app.core.lifecycle import lifespan
 from app.core.logging import configure_logging
 
 configure_logging()
-logger = logging.getLogger(__name__)
-
-app = FastAPI(title=settings.APP_NAME)
 
 
-@app.on_event("startup")
-def on_startup() -> None:
-    logger.info("Starting SentinelOps API")
-    logger.info("Environment: %s", settings.ENVIRONMENT)
-    logger.info("Debug mode: %s", settings.DEBUG)
+def create_application() -> FastAPI:
+    app = FastAPI(title=settings.APP_NAME, lifespan=lifespan)
+    app.include_router(api_router)
+    return app
 
 
-@app.get("/")
-def root():
-    return {
-        "service": settings.APP_NAME,
-        "environment": settings.ENVIRONMENT,
-        "debug": settings.DEBUG,
-        "status": "running",
-    }
-
-
-app.include_router(router)
+app = create_application()

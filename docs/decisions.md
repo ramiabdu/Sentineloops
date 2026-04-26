@@ -24,3 +24,18 @@
 **Decision:** Use PostgreSQL for durable relational state and Redis for queue/cache coordination.
 
 **Why:** This is a pragmatic baseline for findings, scans, accounts, and background job orchestration.
+
+## ADR-006: SQLAlchemy + Alembic as schema source of truth
+**Decision:** Use SQLAlchemy ORM models together with Alembic migrations for relational schema evolution.
+
+**Why:** This keeps data models explicit in code while making database changes reproducible, reviewable, and safe to bootstrap across local environments.
+
+## ADR-007: Docker Compose for the full local stack
+**Decision:** Run the API, PostgreSQL, and Redis together in Docker Compose for local development.
+
+**Why:** The project now spans application code, schema migrations, and runtime dependencies. A single compose stack reduces local drift and gives future scanner/worker work a stable base.
+
+## ADR-008: Application factory + centralized API router
+**Decision:** Structure the FastAPI app around `create_application()`, lifespan hooks, and a central API router that includes route modules.
+
+**Why:** This keeps bootstrap concerns out of handlers, makes testing easier, and gives the codebase a predictable structure before onboarding, findings, and scan endpoints are added.
