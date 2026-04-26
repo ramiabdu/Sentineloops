@@ -27,10 +27,10 @@ run-backend:
 	cd backend && python -m uvicorn app.main:app --reload
 
 db-bootstrap:
-	cd backend && python -m alembic upgrade head
+	cd backend && alembic upgrade head
 
 db-current:
-	cd backend && python -m alembic current
+	cd backend && alembic current
 
 fmt:
 	cd backend && python -m black app ../tests

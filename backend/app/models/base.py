@@ -8,6 +8,10 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.types import Uuid
 
 
+def enum_values(enum_class: type) -> list[str]:
+    return [member.value for member in enum_class]
+
+
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
 

@@ -38,3 +38,17 @@ def test_default_enum_values_are_defined():
     assert FindingStatus.OPEN.value == "open"
     assert FindingSeverity.CRITICAL.value == "critical"
     assert CloudProvider.AWS.value == "aws"
+
+
+def test_sqlalchemy_enums_use_database_values():
+    assert Account.__table__.c.cloud_provider.type.enums == ["aws", "azure", "gcp"]
+    assert Account.__table__.c.status.type.enums == ["pending", "active", "disconnected"]
+    assert Scan.__table__.c.status.type.enums == ["queued", "running", "completed", "failed"]
+    assert Finding.__table__.c.severity.type.enums == [
+        "critical",
+        "high",
+        "medium",
+        "low",
+        "info",
+    ]
+    assert Finding.__table__.c.status.type.enums == ["open", "triaged", "resolved"]
