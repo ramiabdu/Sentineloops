@@ -156,6 +156,9 @@ MIT
 
 - `/`
 - `/health`
+- `GET /accounts`
+- `POST /accounts`
+- `GET /accounts/{account_id}`
 
 ## Runtime behavior
 
