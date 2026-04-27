@@ -35,4 +35,6 @@ class TimestampedModel:
 
 
 class UUIDPrimaryKeyMixin:
-    id: Mapped[UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid4)
+    id: Mapped[UUID] = mapped_column(
+        Uuid(as_uuid=True), primary_key=True, default=uuid4
+    )

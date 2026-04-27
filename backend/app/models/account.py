@@ -28,7 +28,9 @@ class AccountStatus(str, enum.Enum):
 class Account(UUIDPrimaryKeyMixin, TimestampedModel, Base):
     __tablename__ = "accounts"
     __table_args__ = (
-        UniqueConstraint("cloud_provider", "external_id", name="uq_accounts_provider_external_id"),
+        UniqueConstraint(
+            "cloud_provider", "external_id", name="uq_accounts_provider_external_id"
+        ),
     )
 
     name: Mapped[str] = mapped_column(String(255), nullable=False)
