@@ -39,3 +39,8 @@
 **Decision:** Structure the FastAPI app around `create_application()`, lifespan hooks, and a central API router that includes route modules.
 
 **Why:** This keeps bootstrap concerns out of handlers, makes testing easier, and gives the codebase a predictable structure before onboarding, findings, and scan endpoints are added.
+
+## ADR-009: Typed scanner plugin contracts
+**Decision:** Model scanners as provider-scoped plugins with typed scan targets, finding drafts, a registry, and a runner.
+
+**Why:** This keeps cloud checks isolated from API and persistence code while giving future scanner, worker, and findings flows a stable integration point.

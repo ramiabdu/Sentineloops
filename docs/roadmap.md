@@ -16,7 +16,8 @@ The execution roadmap is derived from the provided 30-day GitHub plan.
 ### Phase 2 — Core product behavior
 - account onboarding API
 - validation + error handling
-- scanner interface and concrete scanners
+- scanner interface
+- concrete cloud scanners
 - persistence of findings
 - risk scoring engine
 - findings APIs

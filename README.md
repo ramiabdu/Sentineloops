@@ -123,6 +123,8 @@ Required scanners include:
 - old access keys
 - missing storage encryption
 
+The scanner layer now exposes typed plugin contracts, a registry, and a runner so concrete cloud checks can be added without coupling scanner code to API handlers or database writes.
+
 ## Development roadmap
 
 The full 30 day plan progresses from repo setup, backend foundations, database/migrations, scanners, persistence, async jobs, frontend dashboard, auth/RBAC, CI, and release polish.
@@ -141,7 +143,7 @@ The repository aims to satisfy the provided definition of done:
 
 ## Next implementation milestones
 
-1. scanner interface and first cloud checks
+1. first cloud checks
 2. findings persistence flow
 3. risk scoring and findings APIs
 4. async worker execution model

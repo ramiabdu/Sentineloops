@@ -39,6 +39,10 @@ backend/app/
 │   ├── base.py
 │   ├── finding.py
 │   └── scan.py
+├── scanners/
+│   ├── contracts.py
+│   ├── registry.py
+│   └── runner.py
 └── schemas/
     ├── account.py
     ├── errors.py
@@ -74,7 +78,12 @@ Persistence boundaries will live here:
 - audit log repository
 
 ### Scanner layer
-Plugin-oriented cloud checks will live here:
+Implemented role:
+- typed scanner contracts for scan targets and finding drafts
+- registry for provider-scoped scanner plugins
+- runner for default provider scans or explicit scanner selection
+
+Concrete cloud checks will live here:
 - S3 exposure scanner
 - security group exposure scanner
 - IAM MFA scanner
@@ -100,8 +109,9 @@ Planned:
 3. `api/router.py` aggregates route modules.
 4. Route handlers return typed schema responses.
 5. `core/exception_handlers.py` maps domain and validation errors into stable JSON payloads.
-6. `db/session.py` owns engine/session creation for repository usage.
-7. Alembic migrations bootstrap the schema before API startup in Docker.
+6. Scanner plugins return normalized `FindingDraft` objects before persistence.
+7. `db/session.py` owns engine/session creation for repository usage.
+8. Alembic migrations bootstrap the schema before API startup in Docker.
 
 ## Async execution direction
 
