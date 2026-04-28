@@ -24,9 +24,12 @@ backend/app/
 ├── api/
 │   ├── router.py
 │   └── routes/
+│       ├── accounts.py
 │       └── health.py
 ├── core/
 │   ├── config.py
+│   ├── errors.py
+│   ├── exception_handlers.py
 │   ├── lifecycle.py
 │   └── logging.py
 ├── db/
@@ -37,6 +40,8 @@ backend/app/
 │   ├── finding.py
 │   └── scan.py
 └── schemas/
+    ├── account.py
+    ├── errors.py
     └── health.py
 ```
 
@@ -46,13 +51,13 @@ backend/app/
 Current role:
 - central route aggregation via `api/router.py`
 - route modules under `api/routes/`
+- request validation through Pydantic schemas
+- standardized JSON error responses
 - response contracts in `schemas/`
 
 Planned growth:
-- request validation
 - authentication/authorization
 - pagination/filtering
-- error mapping
 
 ### Service layer
 Business use cases will live here:
@@ -94,8 +99,9 @@ Planned:
 2. `core/lifecycle.py` handles startup logging through lifespan.
 3. `api/router.py` aggregates route modules.
 4. Route handlers return typed schema responses.
-5. `db/session.py` owns engine/session creation for future repository usage.
-6. Alembic migrations bootstrap the schema before API startup in Docker.
+5. `core/exception_handlers.py` maps domain and validation errors into stable JSON payloads.
+6. `db/session.py` owns engine/session creation for repository usage.
+7. Alembic migrations bootstrap the schema before API startup in Docker.
 
 ## Async execution direction
 

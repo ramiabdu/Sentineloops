@@ -141,13 +141,11 @@ The repository aims to satisfy the provided definition of done:
 
 ## Next implementation milestones
 
-1. account onboarding API
-2. validation schemas and error handling
-3. scanner interface and first cloud checks
-4. findings persistence flow
-5. risk scoring and findings APIs
-6. async worker execution model
-7. CI hardening and dashboard expansion
+1. scanner interface and first cloud checks
+2. findings persistence flow
+3. risk scoring and findings APIs
+4. async worker execution model
+5. CI hardening and dashboard expansion
 
 ## License
 
@@ -163,3 +161,4 @@ MIT
 ## Runtime behavior
 
 Application logs startup metadata including environment and debug mode.
+API errors use stable JSON payloads with `code` and `message` fields. Validation failures also include a `details` list for invalid request fields.
