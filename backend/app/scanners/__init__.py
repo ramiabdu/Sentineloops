@@ -1,3 +1,11 @@
+from app.scanners.aws import (
+    S3AclGrant,
+    S3Bucket,
+    S3BucketClient,
+    S3BucketPolicyStatus,
+    S3PublicAccessBlock,
+    S3PublicBucketScanner,
+)
 from app.scanners.contracts import (
     CloudScanner,
     FindingDraft,
@@ -19,6 +27,12 @@ __all__ = [
     "DuplicateScannerError",
     "FindingDraft",
     "InvalidScannerError",
+    "S3AclGrant",
+    "S3Bucket",
+    "S3BucketClient",
+    "S3BucketPolicyStatus",
+    "S3PublicAccessBlock",
+    "S3PublicBucketScanner",
     "ScannerNotFoundError",
     "ScannerProviderMismatchError",
     "ScannerRegistry",

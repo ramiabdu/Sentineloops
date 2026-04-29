@@ -44,3 +44,8 @@
 **Decision:** Model scanners as provider-scoped plugins with typed scan targets, finding drafts, a registry, and a runner.
 
 **Why:** This keeps cloud checks isolated from API and persistence code while giving future scanner, worker, and findings flows a stable integration point.
+
+## ADR-010: Cloud scanners depend on client protocols
+**Decision:** Keep concrete cloud scanners behind small client protocols instead of importing cloud SDKs directly into scanner logic.
+
+**Why:** This makes scanner behavior easy to test without credentials, keeps SDK adapters replaceable, and avoids coupling detection logic to a specific AWS client implementation.

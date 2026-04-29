@@ -117,13 +117,13 @@ Dockerized local runtime starts the backend API with PostgreSQL and Redis.
 The target MVP includes multi account onboarding, a security scanning engine, findings persistence, risk scoring, REST APIs, background workers, dashboard UI, auth/RBAC, alerts, audit logs, CI/CD, local Docker, Terraform, and professional documentation.
 
 Required scanners include:
-- public S3 buckets
+- public S3 buckets (scanner logic implemented)
 - open security groups (`0.0.0.0/0`)
 - IAM users without MFA
 - old access keys
 - missing storage encryption
 
-The scanner layer now exposes typed plugin contracts, a registry, and a runner so concrete cloud checks can be added without coupling scanner code to API handlers or database writes.
+The scanner layer now exposes typed plugin contracts, a registry, and a runner. The first concrete AWS scanner detects public S3 bucket exposure through public bucket policies and ACL grants.
 
 ## Development roadmap
 
@@ -143,7 +143,7 @@ The repository aims to satisfy the provided definition of done:
 
 ## Next implementation milestones
 
-1. first cloud checks
+1. security group open-port scanner
 2. findings persistence flow
 3. risk scoring and findings APIs
 4. async worker execution model

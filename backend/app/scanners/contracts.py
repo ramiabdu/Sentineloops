@@ -10,7 +10,8 @@ from uuid import UUID
 from app.models.account import CloudProvider
 from app.models.finding import FindingSeverity
 
-ScannerMetadataValue = str | int | float | bool | None
+ScannerMetadataScalar = str | int | float | bool | None
+ScannerMetadataValue = ScannerMetadataScalar | tuple[ScannerMetadataScalar, ...]
 
 
 def _require_text(field_name: str, value: str) -> None:
