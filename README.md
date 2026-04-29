@@ -118,12 +118,12 @@ The target MVP includes multi account onboarding, a security scanning engine, fi
 
 Required scanners include:
 - public S3 buckets (scanner logic implemented)
-- open security groups (`0.0.0.0/0`)
+- open security groups (`0.0.0.0/0`) (scanner logic implemented)
 - IAM users without MFA
 - old access keys
 - missing storage encryption
 
-The scanner layer now exposes typed plugin contracts, a registry, and a runner. The first concrete AWS scanner detects public S3 bucket exposure through public bucket policies and ACL grants.
+The scanner layer now exposes typed plugin contracts, a registry, and a runner. Concrete AWS scanners detect public S3 bucket exposure and public security group ingress.
 
 ## Development roadmap
 
@@ -143,7 +143,7 @@ The repository aims to satisfy the provided definition of done:
 
 ## Next implementation milestones
 
-1. security group open-port scanner
+1. IAM users without MFA scanner
 2. findings persistence flow
 3. risk scoring and findings APIs
 4. async worker execution model

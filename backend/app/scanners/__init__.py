@@ -5,6 +5,10 @@ from app.scanners.aws import (
     S3BucketPolicyStatus,
     S3PublicAccessBlock,
     S3PublicBucketScanner,
+    SecurityGroup,
+    SecurityGroupClient,
+    SecurityGroupIngressRule,
+    SecurityGroupOpenPortScanner,
 )
 from app.scanners.contracts import (
     CloudScanner,
@@ -38,6 +42,10 @@ __all__ = [
     "ScannerRegistry",
     "ScannerRunResult",
     "ScanTarget",
+    "SecurityGroup",
+    "SecurityGroupClient",
+    "SecurityGroupIngressRule",
+    "SecurityGroupOpenPortScanner",
     "default_registry",
     "run_scanners",
 ]
