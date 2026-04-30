@@ -109,9 +109,10 @@ Planned:
 3. `api/router.py` aggregates route modules.
 4. Route handlers return typed schema responses.
 5. `core/exception_handlers.py` maps domain and validation errors into stable JSON payloads.
-6. Scanner plugins return normalized `FindingDraft` objects before persistence.
-7. `db/session.py` owns engine/session creation for repository usage.
-8. Alembic migrations bootstrap the schema before API startup in Docker.
+6. Scanner plugins return normalized `FindingDraft` objects.
+7. `services/findings.py` persists scanner output as account- and scan-linked findings.
+8. `db/session.py` owns engine/session creation for repository usage.
+9. Alembic migrations bootstrap the schema before API startup in Docker.
 
 ## Async execution direction
 
