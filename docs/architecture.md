@@ -84,9 +84,9 @@ Implemented role:
 - runner for default provider scans or explicit scanner selection
 - AWS S3 public bucket scanner using a client protocol
 - AWS security group open-port scanner using a client protocol
+- AWS IAM user without MFA scanner using a client protocol
 
 Concrete cloud checks will live here:
-- IAM MFA scanner
 - access key age scanner
 - storage encryption scanner
 

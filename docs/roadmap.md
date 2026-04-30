@@ -17,7 +17,7 @@ The execution roadmap is derived from the provided 30-day GitHub plan.
 - account onboarding API
 - validation + error handling
 - scanner interface
-- concrete cloud scanners, including S3 public buckets and security group exposure
+- concrete cloud scanners, including S3 public buckets, security group exposure, and IAM users without MFA
 - persistence of findings
 - risk scoring engine
 - findings APIs
