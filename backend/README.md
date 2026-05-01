@@ -7,5 +7,5 @@ FastAPI application layer for SentinelOps.
 - scan lifecycle APIs
 - findings retrieval APIs
 - authentication and RBAC
-- risk scoring orchestration
+- risk scoring orchestration (implemented for persisted scanner findings)
 - persistence via repositories

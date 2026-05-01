@@ -4,11 +4,19 @@ from app.services.findings import (
     persist_finding_draft,
     persist_scanner_findings,
 )
+from app.services.risk import (
+    calculate_finding_risk_score,
+    normalize_risk_score,
+    resolve_finding_risk_score,
+)
 
 __all__ = [
     "AccountAlreadyExistsError",
+    "calculate_finding_risk_score",
     "FindingPersistenceError",
+    "normalize_risk_score",
     "onboard_account",
     "persist_finding_draft",
     "persist_scanner_findings",
+    "resolve_finding_risk_score",
 ]

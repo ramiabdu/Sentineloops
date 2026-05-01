@@ -123,7 +123,7 @@ Required scanners include:
 - old access keys
 - missing storage encryption
 
-The scanner layer now exposes typed plugin contracts, a registry, and a runner. Concrete AWS scanners detect public S3 bucket exposure, public security group ingress, and IAM console users without MFA. Scanner findings can be persisted into the database with account and scan linkage.
+The scanner layer now exposes typed plugin contracts, a registry, and a runner. Concrete AWS scanners detect public S3 bucket exposure, public security group ingress, and IAM console users without MFA. Scanner findings can be persisted into the database with account and scan linkage, and missing risk scores are calculated automatically from severity and scanner context.
 
 ## Development roadmap
 
@@ -143,11 +143,10 @@ The repository aims to satisfy the provided definition of done:
 
 ## Next implementation milestones
 
-1. risk scoring engine
-2. findings APIs
-3. scan trigger/status flow
-4. async worker execution model
-5. CI hardening and dashboard expansion
+1. findings APIs
+2. scan trigger/status flow
+3. async worker execution model
+4. CI hardening and dashboard expansion
 
 ## License
 

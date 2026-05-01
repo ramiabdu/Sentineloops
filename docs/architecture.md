@@ -43,6 +43,10 @@ backend/app/
 │   ├── contracts.py
 │   ├── registry.py
 │   └── runner.py
+├── services/
+│   ├── accounts.py
+│   ├── findings.py
+│   └── risk.py
 └── schemas/
     ├── account.py
     ├── errors.py
@@ -66,8 +70,9 @@ Planned growth:
 ### Service layer
 Business use cases will live here:
 - onboarding accounts
+- persisting scanner findings
+- calculating deterministic finding risk scores from severity and scanner context
 - starting scans
-- calculating risk
 - listing and triaging findings
 
 ### Repository layer
@@ -110,9 +115,10 @@ Planned:
 4. Route handlers return typed schema responses.
 5. `core/exception_handlers.py` maps domain and validation errors into stable JSON payloads.
 6. Scanner plugins return normalized `FindingDraft` objects.
-7. `services/findings.py` persists scanner output as account- and scan-linked findings.
-8. `db/session.py` owns engine/session creation for repository usage.
-9. Alembic migrations bootstrap the schema before API startup in Docker.
+7. `services/risk.py` assigns normalized 0.00-10.00 risk scores when scanner drafts do not provide one.
+8. `services/findings.py` persists scanner output as account- and scan-linked findings.
+9. `db/session.py` owns engine/session creation for repository usage.
+10. Alembic migrations bootstrap the schema before API startup in Docker.
 
 ## Async execution direction
 

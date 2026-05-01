@@ -57,9 +57,7 @@ def test_registry_registers_and_filters_scanners_by_provider():
     registry = ScannerRegistry([AzureStorageScanner(), AwsPublicBucketScanner()])
 
     scanner_names = [scanner.name for scanner in registry.list_scanners()]
-    aws_scanner_names = [
-        scanner.name for scanner in registry.list_for_provider(CloudProvider.AWS)
-    ]
+    aws_scanner_names = [scanner.name for scanner in registry.list_for_provider(CloudProvider.AWS)]
 
     assert scanner_names == [
         "aws-s3-public-bucket",

@@ -75,9 +75,7 @@ def test_iam_user_without_mfa_scanner_ignores_users_with_mfa():
                 )
             ],
             mfa_devices_by_user={
-                "alice": [
-                    IAMMFADevice(serial_number="arn:aws:iam::123456789012:mfa/alice")
-                ]
+                "alice": [IAMMFADevice(serial_number="arn:aws:iam::123456789012:mfa/alice")]
             },
         )
     )

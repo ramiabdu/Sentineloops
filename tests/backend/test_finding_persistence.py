@@ -95,7 +95,11 @@ def test_persist_scanner_findings_links_to_scan(db_session: Session):
                     resource_id="sg-123",
                     resource_type="security_group",
                     region="us-east-1",
-                    metadata={"source": "0.0.0.0/0", "port_label": "22"},
+                    metadata={
+                        "source": "0.0.0.0/0",
+                        "port_label": "22",
+                        "exposes_admin_port": True,
+                    },
                 ),
             ),
         ),
@@ -108,7 +112,11 @@ def test_persist_scanner_findings_links_to_scan(db_session: Session):
                     description="Console access lacks MFA.",
                     resource_id="arn:aws:iam::123456789012:user/alice",
                     resource_type="iam_user",
-                    metadata={"user_name": "alice"},
+                    metadata={
+                        "user_name": "alice",
+                        "password_enabled": True,
+                        "mfa_device_count": 0,
+                    },
                 ),
             ),
         ),
@@ -128,6 +136,10 @@ def test_persist_scanner_findings_links_to_scan(db_session: Session):
         "aws-security-group-open-port",
         "aws-iam-user-without-mfa",
     }
+    assert {finding.resource_type: finding.risk_score for finding in findings} == {
+        "security_group": Decimal("10.00"),
+        "iam_user": Decimal("7.75"),
+    }
     assert len(list_findings_for_scan(db_session, scan.id)) == 2
     assert len(list_findings_for_account(db_session, account.id)) == 2
 
@@ -138,9 +150,7 @@ def test_persist_scanner_findings_commits_empty_results(db_session: Session):
     findings = persist_scanner_findings(
         db_session,
         account_id=account.id,
-        scanner_results=[
-            ScannerRunResult(scanner_name="aws-s3-public-bucket", findings=())
-        ],
+        scanner_results=[ScannerRunResult(scanner_name="aws-s3-public-bucket", findings=())],
     )
 
     assert findings == []

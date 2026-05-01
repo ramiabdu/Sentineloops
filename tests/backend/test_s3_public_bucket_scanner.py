@@ -89,9 +89,7 @@ def test_s3_public_bucket_scanner_reports_public_policy_and_acl_findings():
         FindingSeverity.CRITICAL,
         FindingSeverity.HIGH,
     ]
-    assert all(
-        finding.resource_id == "arn:aws:s3:::public-assets" for finding in findings
-    )
+    assert all(finding.resource_id == "arn:aws:s3:::public-assets" for finding in findings)
     assert all(finding.region == "us-east-1" for finding in findings)
     assert findings[0].metadata["detection_source"] == "bucket_policy_status"
     assert findings[1].metadata["public_acl_grants"] == ("AllUsers:READ",)

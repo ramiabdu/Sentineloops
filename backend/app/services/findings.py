@@ -1,5 +1,4 @@
 from collections.abc import Iterable, Mapping
-from decimal import Decimal
 from uuid import UUID
 
 from sqlalchemy.exc import IntegrityError
@@ -8,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.models.finding import Finding
 from app.repositories.findings import create_finding
 from app.scanners import FindingDraft, ScannerRunResult
+from app.services.risk import resolve_finding_risk_score
 
 
 class FindingPersistenceError(Exception):
@@ -55,6 +55,7 @@ def persist_finding_draft(
     scan_id: UUID | None = None,
     commit: bool = True,
 ) -> Finding:
+    metadata = _normalize_metadata(draft.metadata)
     finding = create_finding(
         db,
         account_id=account_id,
@@ -66,9 +67,13 @@ def persist_finding_draft(
         resource_id=draft.resource_id,
         resource_type=draft.resource_type,
         region=draft.region,
-        risk_score=_normalize_risk_score(draft.risk_score),
+        risk_score=resolve_finding_risk_score(
+            severity=draft.severity,
+            explicit_risk_score=draft.risk_score,
+            metadata=metadata,
+        ),
         remediation=draft.remediation,
-        resource_metadata=_normalize_metadata(draft.metadata),
+        resource_metadata=metadata,
     )
 
     if not commit:
@@ -82,12 +87,6 @@ def persist_finding_draft(
 
     db.refresh(finding)
     return finding
-
-
-def _normalize_risk_score(risk_score: Decimal | None) -> Decimal | None:
-    if risk_score is None:
-        return None
-    return risk_score.quantize(Decimal("0.01"))
 
 
 def _normalize_metadata(metadata: Mapping[str, object]) -> dict[str, object]:
