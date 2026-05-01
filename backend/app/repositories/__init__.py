@@ -6,6 +6,7 @@ from app.repositories.accounts import (
 )
 from app.repositories.findings import (
     create_finding,
+    get_finding,
     list_findings,
     list_findings_for_account,
     list_findings_for_scan,
@@ -18,6 +19,7 @@ __all__ = [
     "create_scan",
     "get_account",
     "get_account_by_external_id",
+    "get_finding",
     "get_scan",
     "list_accounts",
     "list_findings",

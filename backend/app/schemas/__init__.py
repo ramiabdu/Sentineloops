@@ -1,5 +1,6 @@
 from app.schemas.account import AccountCreate, AccountResponse
 from app.schemas.errors import ErrorDetail, ErrorResponse, ValidationErrorResponse
+from app.schemas.finding import FindingResponse
 from app.schemas.health import HealthResponse, RootResponse
 
 __all__ = [
@@ -7,6 +8,7 @@ __all__ = [
     "AccountResponse",
     "ErrorDetail",
     "ErrorResponse",
+    "FindingResponse",
     "HealthResponse",
     "RootResponse",
     "ValidationErrorResponse",

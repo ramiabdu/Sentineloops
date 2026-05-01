@@ -25,6 +25,7 @@ backend/app/
 │   ├── router.py
 │   └── routes/
 │       ├── accounts.py
+│       ├── findings.py
 │       └── health.py
 ├── core/
 │   ├── config.py
@@ -60,6 +61,7 @@ Current role:
 - central route aggregation via `api/router.py`
 - route modules under `api/routes/`
 - request validation through Pydantic schemas
+- findings list/detail APIs with account, scan, severity, status, and scanner filters
 - standardized JSON error responses
 - response contracts in `schemas/`
 

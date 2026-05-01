@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models.finding import Finding, FindingSeverity
+from app.models.finding import Finding, FindingSeverity, FindingStatus
 
 
 def create_finding(
@@ -41,8 +41,32 @@ def create_finding(
     return finding
 
 
-def list_findings(db: Session) -> list[Finding]:
-    statement = select(Finding).order_by(Finding.created_at.desc())
+def get_finding(db: Session, finding_id: UUID) -> Finding | None:
+    return db.get(Finding, finding_id)
+
+
+def list_findings(
+    db: Session,
+    *,
+    account_id: UUID | None = None,
+    scan_id: UUID | None = None,
+    severity: FindingSeverity | None = None,
+    status: FindingStatus | None = None,
+    scanner_name: str | None = None,
+) -> list[Finding]:
+    statement = select(Finding)
+    if account_id is not None:
+        statement = statement.where(Finding.account_id == account_id)
+    if scan_id is not None:
+        statement = statement.where(Finding.scan_id == scan_id)
+    if severity is not None:
+        statement = statement.where(Finding.severity == severity)
+    if status is not None:
+        statement = statement.where(Finding.status == status)
+    if scanner_name is not None:
+        statement = statement.where(Finding.scanner_name == scanner_name)
+
+    statement = statement.order_by(Finding.created_at.desc())
     return list(db.execute(statement).scalars().all())
 
 
