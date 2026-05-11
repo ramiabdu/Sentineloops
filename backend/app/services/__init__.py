@@ -9,6 +9,7 @@ from app.services.risk import (
     normalize_risk_score,
     resolve_finding_risk_score,
 )
+from app.services.scans import ScanAccountNotFoundError, ScanTriggerError, trigger_scan
 
 __all__ = [
     "AccountAlreadyExistsError",
@@ -19,4 +20,7 @@ __all__ = [
     "persist_finding_draft",
     "persist_scanner_findings",
     "resolve_finding_risk_score",
+    "ScanAccountNotFoundError",
+    "ScanTriggerError",
+    "trigger_scan",
 ]

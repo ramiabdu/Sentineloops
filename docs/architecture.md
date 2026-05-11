@@ -26,7 +26,8 @@ backend/app/
 │   └── routes/
 │       ├── accounts.py
 │       ├── findings.py
-│       └── health.py
+│       ├── health.py
+│       └── scans.py
 ├── core/
 │   ├── config.py
 │   ├── errors.py
@@ -62,6 +63,7 @@ Current role:
 - route modules under `api/routes/`
 - request validation through Pydantic schemas
 - findings list/detail APIs with account, scan, severity, status, and scanner filters
+- scan trigger/status APIs for queueing and inspecting scan jobs
 - standardized JSON error responses
 - response contracts in `schemas/`
 
@@ -74,7 +76,7 @@ Business use cases will live here:
 - onboarding accounts
 - persisting scanner findings
 - calculating deterministic finding risk scores from severity and scanner context
-- starting scans
+- starting scans as queued jobs
 - listing and triaging findings
 
 ### Repository layer
