@@ -19,6 +19,7 @@ def test_compose_defines_day6_services_and_healthchecks():
     compose_text = (root / "docker" / "docker-compose.yml").read_text()
 
     assert "api:" in compose_text
+    assert "worker:" in compose_text
     assert "db:" in compose_text
     assert "redis:" in compose_text
     assert "healthcheck:" in compose_text

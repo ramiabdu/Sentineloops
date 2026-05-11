@@ -26,6 +26,27 @@ services:
       retries: 5
       start_period: 10s
 
+  worker:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    working_dir: /app
+    command: ["sh", "-lc", "PYTHONPATH=/app/backend python -m workers.app.main"]
+    volumes:
+      - ../backend:/app/backend
+      - ../workers:/app/workers
+    env_file:
+      - ../backend/.env
+    environment:
+      DATABASE_URL: postgresql+psycopg://sentinelops:sentinelops@db:5432/sentinelops
+      DATABASE_ECHO: "false"
+      WORKER_POLL_INTERVAL_SECONDS: "5"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
   db:
     image: postgres:16
     environment:

@@ -5,6 +5,7 @@ Local development stack definitions live here.
 ## Services
 
 - `api`: FastAPI app with Alembic bootstrap on startup
+- `worker`: queued scan execution loop
 - `db`: PostgreSQL 16
 - `redis`: Redis 7
 

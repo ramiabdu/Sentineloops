@@ -11,7 +11,7 @@ from app.repositories.findings import (
     list_findings_for_account,
     list_findings_for_scan,
 )
-from app.repositories.scans import create_scan, get_scan, list_scans
+from app.repositories.scans import create_scan, get_next_queued_scan, get_scan, list_scans
 
 __all__ = [
     "create_account",
@@ -20,6 +20,7 @@ __all__ = [
     "get_account",
     "get_account_by_external_id",
     "get_finding",
+    "get_next_queued_scan",
     "get_scan",
     "list_accounts",
     "list_findings",

@@ -9,6 +9,13 @@ from app.services.risk import (
     normalize_risk_score,
     resolve_finding_risk_score,
 )
+from app.services.scan_execution import (
+    ScanExecutionError,
+    ScanExecutionNotFoundError,
+    ScanNotQueuedError,
+    execute_next_queued_scan,
+    execute_scan,
+)
 from app.services.scans import ScanAccountNotFoundError, ScanTriggerError, trigger_scan
 
 __all__ = [
@@ -21,6 +28,11 @@ __all__ = [
     "persist_scanner_findings",
     "resolve_finding_risk_score",
     "ScanAccountNotFoundError",
+    "ScanExecutionError",
+    "ScanExecutionNotFoundError",
+    "ScanNotQueuedError",
     "ScanTriggerError",
+    "execute_next_queued_scan",
+    "execute_scan",
     "trigger_scan",
 ]

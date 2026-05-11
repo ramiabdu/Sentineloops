@@ -8,4 +8,5 @@ FastAPI application layer for SentinelOps.
 - findings retrieval APIs (implemented)
 - authentication and RBAC
 - risk scoring orchestration (implemented for persisted scanner findings)
+- scan execution orchestration (implemented for queued worker scans)
 - persistence via repositories

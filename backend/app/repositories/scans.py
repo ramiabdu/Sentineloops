@@ -26,6 +26,16 @@ def get_scan(db: Session, scan_id: UUID) -> Scan | None:
     return db.get(Scan, scan_id)
 
 
+def get_next_queued_scan(db: Session) -> Scan | None:
+    statement = (
+        select(Scan)
+        .where(Scan.status == ScanStatus.QUEUED)
+        .order_by(Scan.created_at.asc())
+        .limit(1)
+    )
+    return db.execute(statement).scalar_one_or_none()
+
+
 def list_scans(
     db: Session,
     *,
