@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
-from sqlalchemy import JSON, Enum, ForeignKey, Numeric, String, Text
+from sqlalchemy import JSON, Enum, ForeignKey, Numeric, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampedModel, UUIDPrimaryKeyMixin, enum_values
@@ -31,6 +31,16 @@ class FindingStatus(str, enum.Enum):
 
 class Finding(UUIDPrimaryKeyMixin, TimestampedModel, Base):
     __tablename__ = "findings"
+    __table_args__ = (
+        UniqueConstraint(
+            "account_id",
+            "scanner_name",
+            "resource_id",
+            "resource_type",
+            "title",
+            name="uq_findings_dedup_identity",
+        ),
+    )
 
     account_id: Mapped[UUID] = mapped_column(
         ForeignKey("accounts.id", ondelete="CASCADE"),

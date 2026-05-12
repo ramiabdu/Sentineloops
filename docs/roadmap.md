@@ -23,9 +23,9 @@ The execution roadmap is derived from the provided 30-day GitHub plan.
 - findings APIs
 - scan trigger/status
 - async worker execution model
+- deduplication
 
 ### Phase 3 — Execution and UI
-- deduplication
 - frontend dashboard
 - accounts page
 - findings table

@@ -45,6 +45,48 @@ def get_finding(db: Session, finding_id: UUID) -> Finding | None:
     return db.get(Finding, finding_id)
 
 
+def get_finding_by_identity(
+    db: Session,
+    *,
+    account_id: UUID,
+    scanner_name: str,
+    resource_id: str,
+    resource_type: str,
+    title: str,
+) -> Finding | None:
+    statement = select(Finding).where(
+        Finding.account_id == account_id,
+        Finding.scanner_name == scanner_name,
+        Finding.resource_id == resource_id,
+        Finding.resource_type == resource_type,
+        Finding.title == title,
+    )
+    return db.execute(statement).scalar_one_or_none()
+
+
+def update_finding(
+    finding: Finding,
+    *,
+    scan_id: UUID | None,
+    severity: FindingSeverity,
+    status: FindingStatus,
+    description: str,
+    region: str | None,
+    risk_score: Decimal | None,
+    remediation: str | None,
+    resource_metadata: dict[str, object] | None,
+) -> Finding:
+    finding.scan_id = scan_id
+    finding.severity = severity
+    finding.status = status
+    finding.description = description
+    finding.region = region
+    finding.risk_score = risk_score
+    finding.remediation = remediation
+    finding.resource_metadata = resource_metadata
+    return finding
+
+
 def list_findings(
     db: Session,
     *,

@@ -26,6 +26,16 @@ def test_account_unique_constraint_covers_provider_and_external_id():
     assert "uq_accounts_provider_external_id" in constraint_names
 
 
+def test_finding_unique_constraint_covers_dedup_identity():
+    constraint_names = {
+        constraint.name
+        for constraint in Finding.__table__.constraints
+        if getattr(constraint, "name", None)
+    }
+
+    assert "uq_findings_dedup_identity" in constraint_names
+
+
 def test_relationship_foreign_keys_exist():
     assert Scan.__table__.c.account_id.foreign_keys
     assert Finding.__table__.c.account_id.foreign_keys

@@ -74,6 +74,124 @@ def test_persist_single_finding_draft(db_session: Session):
     assert finding.risk_score == Decimal("7.14")
 
 
+def test_persist_finding_draft_updates_existing_deduped_finding(db_session: Session):
+    account = create_test_account(db_session)
+    first_scan = create_scan(
+        db_session,
+        account_id=account.id,
+        status=ScanStatus.RUNNING,
+        triggered_by="tests",
+    )
+    second_scan = create_scan(
+        db_session,
+        account_id=account.id,
+        status=ScanStatus.RUNNING,
+        triggered_by="tests",
+    )
+    db_session.commit()
+    db_session.refresh(first_scan)
+    db_session.refresh(second_scan)
+
+    first_finding = persist_finding_draft(
+        db_session,
+        account_id=account.id,
+        scan_id=first_scan.id,
+        scanner_name="aws-security-group-open-port",
+        draft=FindingDraft(
+            severity=FindingSeverity.HIGH,
+            title="Security group allows public ingress",
+            description="Public HTTPS ingress is allowed.",
+            resource_id="sg-123",
+            resource_type="security_group",
+            region="us-east-1",
+            metadata={
+                "source": "0.0.0.0/0",
+                "port_label": "443",
+                "exposes_admin_port": False,
+            },
+        ),
+    )
+    first_finding.status = FindingStatus.RESOLVED
+    db_session.commit()
+
+    updated_finding = persist_finding_draft(
+        db_session,
+        account_id=account.id,
+        scan_id=second_scan.id,
+        scanner_name="aws-security-group-open-port",
+        draft=FindingDraft(
+            severity=FindingSeverity.CRITICAL,
+            title="Security group allows public ingress",
+            description="Public SSH ingress is allowed.",
+            resource_id="sg-123",
+            resource_type="security_group",
+            region="us-east-2",
+            metadata={
+                "source": "0.0.0.0/0",
+                "port_label": "22",
+                "exposes_admin_port": True,
+            },
+        ),
+    )
+
+    assert updated_finding.id == first_finding.id
+    assert updated_finding.status == FindingStatus.OPEN
+    assert updated_finding.scan_id == second_scan.id
+    assert updated_finding.severity == FindingSeverity.CRITICAL
+    assert updated_finding.region == "us-east-2"
+    assert updated_finding.resource_metadata == {
+        "source": "0.0.0.0/0",
+        "port_label": "22",
+        "exposes_admin_port": True,
+    }
+    assert updated_finding.risk_score == Decimal("10.00")
+    assert len(list_findings_for_account(db_session, account.id)) == 1
+    assert list_findings_for_scan(db_session, first_scan.id) == []
+    assert list_findings_for_scan(db_session, second_scan.id) == [updated_finding]
+
+
+def test_persist_finding_draft_keeps_distinct_titles_for_same_resource(db_session: Session):
+    account = create_test_account(db_session)
+    base_kwargs = {
+        "account_id": account.id,
+        "scanner_name": "aws-s3-public-bucket",
+    }
+
+    policy_finding = persist_finding_draft(
+        db_session,
+        **base_kwargs,
+        draft=FindingDraft(
+            severity=FindingSeverity.CRITICAL,
+            title="S3 bucket policy is public",
+            description="The bucket policy allows public access.",
+            resource_id="arn:aws:s3:::public-assets",
+            resource_type="s3_bucket",
+            metadata={
+                "detection_source": "bucket_policy_status",
+                "blocks_all_public_access": False,
+            },
+        ),
+    )
+    acl_finding = persist_finding_draft(
+        db_session,
+        **base_kwargs,
+        draft=FindingDraft(
+            severity=FindingSeverity.HIGH,
+            title="S3 bucket ACL grants public access",
+            description="The bucket ACL includes public grants.",
+            resource_id="arn:aws:s3:::public-assets",
+            resource_type="s3_bucket",
+            metadata={
+                "detection_source": "bucket_acl",
+                "blocks_all_public_access": False,
+            },
+        ),
+    )
+
+    assert policy_finding.id != acl_finding.id
+    assert len(list_findings_for_account(db_session, account.id)) == 2
+
+
 def test_persist_scanner_findings_links_to_scan(db_session: Session):
     account = create_test_account(db_session)
     scan = create_scan(

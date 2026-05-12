@@ -79,6 +79,7 @@ Planned growth:
 Business use cases will live here:
 - onboarding accounts
 - persisting scanner findings
+- deduplicating repeated scanner observations
 - calculating deterministic finding risk scores from severity and scanner context
 - starting scans as queued jobs
 - executing queued scans and updating scan lifecycle state
@@ -125,7 +126,7 @@ Planned:
 5. `core/exception_handlers.py` maps domain and validation errors into stable JSON payloads.
 6. Scanner plugins return normalized `FindingDraft` objects.
 7. `services/risk.py` assigns normalized 0.00-10.00 risk scores when scanner drafts do not provide one.
-8. `services/findings.py` persists scanner output as account- and scan-linked findings.
+8. `services/findings.py` deduplicates and persists scanner output as account- and scan-linked findings.
 9. `services/scan_execution.py` moves queued scans through running, completed, or failed states.
 10. `workers/app/main.py` polls for queued scans and delegates execution to backend services.
 11. `db/session.py` owns engine/session creation for repository usage.
@@ -133,7 +134,7 @@ Planned:
 
 ## Async execution direction
 
-The worker execution model now supports a polling loop that claims queued scans, executes scanner plugins, persists findings, and records completion or failure state. Redis remains available in the local stack for a future queue-backed implementation.
+The worker execution model now supports a polling loop that claims queued scans, executes scanner plugins, deduplicates and persists findings, and records completion or failure state. Redis remains available in the local stack for a future queue-backed implementation.
 
 ## Security posture principles
 
