@@ -25,3 +25,10 @@ class ScanResponse(BaseModel):
     error_message: str | None
     created_at: datetime
     updated_at: datetime
+
+
+class ScanStatusResponse(ScanResponse):
+    duration_seconds: int | None
+    findings_total: int
+    findings_by_severity: dict[str, int]
+    findings_by_status: dict[str, int]

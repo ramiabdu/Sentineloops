@@ -5,6 +5,9 @@ from app.repositories.accounts import (
     list_accounts,
 )
 from app.repositories.findings import (
+    count_findings_for_scan,
+    count_findings_for_scan_by_severity,
+    count_findings_for_scan_by_status,
     create_finding,
     get_finding,
     get_finding_by_identity,
@@ -16,6 +19,9 @@ from app.repositories.findings import (
 from app.repositories.scans import create_scan, get_next_queued_scan, get_scan, list_scans
 
 __all__ = [
+    "count_findings_for_scan",
+    "count_findings_for_scan_by_severity",
+    "count_findings_for_scan_by_status",
     "create_account",
     "create_finding",
     "create_scan",

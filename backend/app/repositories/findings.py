@@ -1,7 +1,7 @@
 from decimal import Decimal
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.models.finding import Finding, FindingSeverity, FindingStatus
@@ -124,3 +124,32 @@ def list_findings_for_scan(db: Session, scan_id: UUID) -> list[Finding]:
         select(Finding).where(Finding.scan_id == scan_id).order_by(Finding.created_at.desc())
     )
     return list(db.execute(statement).scalars().all())
+
+
+def count_findings_for_scan(db: Session, scan_id: UUID) -> int:
+    statement = select(func.count(Finding.id)).where(Finding.scan_id == scan_id)
+    return int(db.execute(statement).scalar_one())
+
+
+def count_findings_for_scan_by_severity(
+    db: Session,
+    scan_id: UUID,
+) -> dict[FindingSeverity, int]:
+    statement = (
+        select(Finding.severity, func.count(Finding.id))
+        .where(Finding.scan_id == scan_id)
+        .group_by(Finding.severity)
+    )
+    return {severity: int(count) for severity, count in db.execute(statement).all()}
+
+
+def count_findings_for_scan_by_status(
+    db: Session,
+    scan_id: UUID,
+) -> dict[FindingStatus, int]:
+    statement = (
+        select(Finding.status, func.count(Finding.id))
+        .where(Finding.scan_id == scan_id)
+        .group_by(Finding.status)
+    )
+    return {status: int(count) for status, count in db.execute(statement).all()}

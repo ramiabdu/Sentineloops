@@ -67,7 +67,7 @@ Current role:
 - route modules under `api/routes/`
 - request validation through Pydantic schemas
 - findings list/detail APIs with account, scan, severity, status, and scanner filters
-- scan trigger/status APIs for queueing and inspecting scan jobs
+- scan trigger/status APIs for queueing and inspecting scan jobs with finding counts
 - standardized JSON error responses
 - response contracts in `schemas/`
 
@@ -83,6 +83,7 @@ Business use cases will live here:
 - calculating deterministic finding risk scores from severity and scanner context
 - starting scans as queued jobs
 - executing queued scans and updating scan lifecycle state
+- summarizing scan progress with duration and finding counts
 - listing and triaging findings
 
 ### Repository layer
@@ -129,8 +130,9 @@ Planned:
 8. `services/findings.py` deduplicates and persists scanner output as account- and scan-linked findings.
 9. `services/scan_execution.py` moves queued scans through running, completed, or failed states.
 10. `workers/app/main.py` polls for queued scans and delegates execution to backend services.
-11. `db/session.py` owns engine/session creation for repository usage.
-12. Alembic migrations bootstrap the schema before API startup in Docker.
+11. `services/scans.py` builds scan status snapshots with lifecycle timing and finding counts.
+12. `db/session.py` owns engine/session creation for repository usage.
+13. Alembic migrations bootstrap the schema before API startup in Docker.
 
 ## Async execution direction
 

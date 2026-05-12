@@ -21,7 +21,7 @@ The execution roadmap is derived from the provided 30-day GitHub plan.
 - persistence of findings
 - risk scoring engine
 - findings APIs
-- scan trigger/status
+- scan trigger/status tracking
 - async worker execution model
 - deduplication
 

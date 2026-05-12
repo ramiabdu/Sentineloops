@@ -7,8 +7,13 @@ from app.core.errors import NotFoundError
 from app.db import get_db
 from app.models.scan import ScanStatus
 from app.repositories.scans import get_scan, list_scans
-from app.schemas.scan import ScanCreate, ScanResponse
-from app.services.scans import ScanAccountNotFoundError, trigger_scan
+from app.schemas.scan import ScanCreate, ScanResponse, ScanStatusResponse
+from app.services.scans import (
+    ScanAccountNotFoundError,
+    ScanStatusNotFoundError,
+    get_scan_status_snapshot,
+    trigger_scan,
+)
 
 router = APIRouter(prefix="/scans", tags=["scans"])
 
@@ -34,6 +39,19 @@ def get_scans(
 ) -> list[ScanResponse]:
     scans = list_scans(db, account_id=account_id, status=scan_status)
     return [ScanResponse.model_validate(scan) for scan in scans]
+
+
+@router.get("/{scan_id}/status", response_model=ScanStatusResponse)
+def get_scan_status(scan_id: UUID, db: Session = Depends(get_db)) -> ScanStatusResponse:
+    try:
+        scan_status = get_scan_status_snapshot(db, scan_id)
+    except ScanStatusNotFoundError as exc:
+        raise NotFoundError(
+            code="scan_not_found",
+            message="Scan was not found.",
+        ) from exc
+
+    return ScanStatusResponse.model_validate(scan_status)
 
 
 @router.get("/{scan_id}", response_model=ScanResponse)
