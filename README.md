@@ -123,7 +123,7 @@ Required scanners include:
 - old access keys
 - missing storage encryption
 
-The scanner layer now exposes typed plugin contracts, a registry, and a runner. Concrete AWS scanners detect public S3 bucket exposure, public security group ingress, and IAM console users without MFA. Scanner findings can be persisted with deduplication, account and scan linkage, automatic risk scores, read APIs, queued scan APIs, scan status summaries, and a worker execution model that processes scans into completed or failed states.
+The scanner layer now exposes typed plugin contracts, a registry, and a runner. Concrete AWS scanners detect public S3 bucket exposure, public security group ingress, and IAM console users without MFA. Scanner findings can be persisted with deduplication, first/last seen tracking, occurrence counts, account and scan linkage, automatic risk scores, read APIs, queued scan APIs, scan status summaries, and a worker execution model that processes scans into completed or failed states.
 
 ## Development roadmap
 

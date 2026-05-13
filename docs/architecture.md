@@ -79,7 +79,7 @@ Planned growth:
 Business use cases will live here:
 - onboarding accounts
 - persisting scanner findings
-- deduplicating repeated scanner observations
+- deduplicating repeated scanner observations with first/last seen tracking
 - calculating deterministic finding risk scores from severity and scanner context
 - starting scans as queued jobs
 - executing queued scans and updating scan lifecycle state

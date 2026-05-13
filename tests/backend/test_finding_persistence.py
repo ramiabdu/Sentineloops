@@ -1,9 +1,11 @@
+from datetime import datetime
 from decimal import Decimal
 
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
+import app.services.findings as finding_service
 from app.models import Base
 from app.models.account import CloudProvider
 from app.models.finding import FindingSeverity, FindingStatus
@@ -72,10 +74,18 @@ def test_persist_single_finding_draft(db_session: Session):
         "public_acl_grants": ["AllUsers:READ"],
     }
     assert finding.risk_score == Decimal("7.14")
+    assert finding.first_seen_at is not None
+    assert finding.last_seen_at is not None
+    assert finding.occurrence_count == 1
 
 
-def test_persist_finding_draft_updates_existing_deduped_finding(db_session: Session):
+def test_persist_finding_draft_updates_existing_deduped_finding(
+    db_session: Session,
+    monkeypatch: pytest.MonkeyPatch,
+):
     account = create_test_account(db_session)
+    first_seen_at = datetime(2026, 5, 13, 10, 0)
+    second_seen_at = datetime(2026, 5, 13, 10, 15)
     first_scan = create_scan(
         db_session,
         account_id=account.id,
@@ -92,6 +102,7 @@ def test_persist_finding_draft_updates_existing_deduped_finding(db_session: Sess
     db_session.refresh(first_scan)
     db_session.refresh(second_scan)
 
+    monkeypatch.setattr(finding_service, "utc_now", lambda: first_seen_at)
     first_finding = persist_finding_draft(
         db_session,
         account_id=account.id,
@@ -114,6 +125,7 @@ def test_persist_finding_draft_updates_existing_deduped_finding(db_session: Sess
     first_finding.status = FindingStatus.RESOLVED
     db_session.commit()
 
+    monkeypatch.setattr(finding_service, "utc_now", lambda: second_seen_at)
     updated_finding = persist_finding_draft(
         db_session,
         account_id=account.id,
@@ -144,6 +156,9 @@ def test_persist_finding_draft_updates_existing_deduped_finding(db_session: Sess
         "port_label": "22",
         "exposes_admin_port": True,
     }
+    assert updated_finding.first_seen_at == first_seen_at
+    assert updated_finding.last_seen_at == second_seen_at
+    assert updated_finding.occurrence_count == 2
     assert updated_finding.risk_score == Decimal("10.00")
     assert len(list_findings_for_account(db_session, account.id)) == 1
     assert list_findings_for_scan(db_session, first_scan.id) == []

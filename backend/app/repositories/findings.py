@@ -1,3 +1,4 @@
+from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
 
@@ -17,6 +18,7 @@ def create_finding(
     description: str,
     resource_id: str,
     resource_type: str,
+    seen_at: datetime,
     scan_id: UUID | None = None,
     region: str | None = None,
     risk_score: Decimal | None = None,
@@ -36,6 +38,9 @@ def create_finding(
         risk_score=risk_score,
         remediation=remediation,
         resource_metadata=resource_metadata,
+        first_seen_at=seen_at,
+        last_seen_at=seen_at,
+        occurrence_count=1,
     )
     db.add(finding)
     return finding
@@ -75,6 +80,7 @@ def update_finding(
     risk_score: Decimal | None,
     remediation: str | None,
     resource_metadata: dict[str, object] | None,
+    seen_at: datetime,
 ) -> Finding:
     finding.scan_id = scan_id
     finding.severity = severity
@@ -84,6 +90,8 @@ def update_finding(
     finding.risk_score = risk_score
     finding.remediation = remediation
     finding.resource_metadata = resource_metadata
+    finding.last_seen_at = seen_at
+    finding.occurrence_count = (finding.occurrence_count or 0) + 1
     return finding
 
 

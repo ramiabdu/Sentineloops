@@ -42,6 +42,12 @@ def test_relationship_foreign_keys_exist():
     assert Finding.__table__.c.scan_id.foreign_keys
 
 
+def test_finding_dedup_tracking_columns_exist():
+    assert Finding.__table__.c.first_seen_at.nullable is False
+    assert Finding.__table__.c.last_seen_at.nullable is False
+    assert Finding.__table__.c.occurrence_count.nullable is False
+
+
 def test_default_enum_values_are_defined():
     assert AccountStatus.PENDING.value == "pending"
     assert ScanStatus.QUEUED.value == "queued"

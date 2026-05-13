@@ -4,6 +4,7 @@ from uuid import UUID
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.models.base import utc_now
 from app.models.finding import Finding, FindingStatus
 from app.repositories.findings import create_finding, get_finding_by_identity, update_finding
 from app.scanners import FindingDraft, ScannerRunResult
@@ -55,6 +56,7 @@ def persist_finding_draft(
     scan_id: UUID | None = None,
     commit: bool = True,
 ) -> Finding:
+    seen_at = utc_now()
     metadata = _normalize_metadata(draft.metadata)
     risk_score = resolve_finding_risk_score(
         severity=draft.severity,
@@ -80,6 +82,7 @@ def persist_finding_draft(
             description=draft.description,
             resource_id=draft.resource_id,
             resource_type=draft.resource_type,
+            seen_at=seen_at,
             region=draft.region,
             risk_score=risk_score,
             remediation=draft.remediation,
@@ -96,6 +99,7 @@ def persist_finding_draft(
             risk_score=risk_score,
             remediation=draft.remediation,
             resource_metadata=metadata,
+            seen_at=seen_at,
         )
 
     if not commit:

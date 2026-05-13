@@ -25,5 +25,8 @@ class FindingResponse(BaseModel):
     risk_score: Decimal | None
     remediation: str | None
     resource_metadata: dict[str, Any] | None
+    first_seen_at: datetime
+    last_seen_at: datetime
+    occurrence_count: int
     created_at: datetime
     updated_at: datetime

@@ -1,14 +1,25 @@
 from __future__ import annotations
 
 import enum
+from datetime import datetime
 from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
-from sqlalchemy import JSON, Enum, ForeignKey, Numeric, String, Text, UniqueConstraint
+from sqlalchemy import (
+    JSON,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Integer,
+    Numeric,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base, TimestampedModel, UUIDPrimaryKeyMixin, enum_values
+from app.models.base import Base, TimestampedModel, UUIDPrimaryKeyMixin, enum_values, utc_now
 
 if TYPE_CHECKING:
     from app.models.account import Account
@@ -71,6 +82,17 @@ class Finding(UUIDPrimaryKeyMixin, TimestampedModel, Base):
     risk_score: Mapped[Decimal | None] = mapped_column(Numeric(5, 2))
     remediation: Mapped[str | None] = mapped_column(Text)
     resource_metadata: Mapped[dict[str, Any] | None] = mapped_column(JSON)
+    first_seen_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=utc_now,
+        nullable=False,
+    )
+    last_seen_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=utc_now,
+        nullable=False,
+    )
+    occurrence_count: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
 
     account: Mapped["Account"] = relationship(back_populates="findings")
     scan: Mapped["Scan | None"] = relationship(back_populates="findings")

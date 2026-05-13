@@ -111,6 +111,9 @@ def test_get_finding_by_id_returns_detail(
     assert body["resource_type"] == "s3_bucket"
     assert body["risk_score"] == "7.75"
     assert body["resource_metadata"]["detection_source"] == "bucket_acl"
+    assert body["first_seen_at"]
+    assert body["last_seen_at"]
+    assert body["occurrence_count"] == 1
 
 
 def test_missing_finding_returns_standard_not_found_error(
