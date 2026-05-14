@@ -59,6 +59,15 @@ backend/app/
     └── scan.py
 ```
 
+## Current frontend shape
+
+The Vite React frontend now starts on a responsive dashboard skeleton with:
+- posture metric cards
+- priority findings preview
+- severity distribution bars
+- cloud account inventory
+- scan activity tracking
+
 ## Backend layers
 
 ### API layer

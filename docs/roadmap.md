@@ -26,7 +26,7 @@ The execution roadmap is derived from the provided 30-day GitHub plan.
 - deduplication with first/last seen tracking
 
 ### Phase 3 — Execution and UI
-- frontend dashboard
+- frontend dashboard skeleton
 - accounts page
 - findings table
 - severity charts

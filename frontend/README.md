@@ -10,9 +10,9 @@ Dashboard UI for SentinelOps.
 
 ## Initial screens
 
-- accounts summary
-- findings table
-- severity charts
-- risk score cards
-- scan status
+- posture metric cards
+- priority findings table
+- severity breakdown bars
+- cloud account inventory
+- scan activity panel
 - finding details
