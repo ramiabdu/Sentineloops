@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from "react";
 
-type DashboardView = "overview" | "accounts";
+type DashboardView = "overview" | "accounts" | "findings";
 
 type MetricCard = {
   label: string;
@@ -31,12 +31,21 @@ type AccountFormState = {
   environment: Environment;
 };
 
+type FindingSeverity = "Critical" | "High" | "Medium" | "Low";
+type FindingStatus = "Open" | "Triaged" | "Resolved";
+
 type FindingRow = {
-  resource: string;
+  id: string;
+  title: string;
   account: string;
-  severity: "Critical" | "High" | "Medium";
+  severity: FindingSeverity;
+  status: FindingStatus;
   scanner: string;
+  resourceType: string;
+  region: string;
+  risk: number;
   lastSeen: string;
+  occurrenceCount: number;
 };
 
 type ScanRow = {
@@ -88,25 +97,82 @@ const initialAccountForm: AccountFormState = {
 
 const findings: FindingRow[] = [
   {
-    resource: "sg-09f3 allows public SSH",
+    id: "fnd-001",
+    title: "sg-09f3 allows public SSH",
     account: "AWS production",
     severity: "Critical",
+    status: "Open",
     scanner: "Security group exposure",
+    resourceType: "Security group",
+    region: "us-east-1",
+    risk: 10,
     lastSeen: "4m ago",
+    occurrenceCount: 3,
   },
   {
-    resource: "public-assets bucket ACL",
+    id: "fnd-002",
+    title: "public-assets bucket ACL",
     account: "AWS production",
     severity: "High",
+    status: "Open",
     scanner: "S3 public bucket",
+    resourceType: "S3 bucket",
+    region: "us-east-1",
+    risk: 7.8,
     lastSeen: "12m ago",
+    occurrenceCount: 2,
   },
   {
-    resource: "alice console MFA missing",
+    id: "fnd-003",
+    title: "alice console MFA missing",
     account: "AWS staging",
     severity: "Medium",
+    status: "Triaged",
     scanner: "IAM without MFA",
+    resourceType: "IAM user",
+    region: "global",
+    risk: 5.6,
     lastSeen: "18m ago",
+    occurrenceCount: 1,
+  },
+  {
+    id: "fnd-004",
+    title: "staging-api allows public HTTPS",
+    account: "AWS staging",
+    severity: "High",
+    status: "Open",
+    scanner: "Security group exposure",
+    resourceType: "Security group",
+    region: "eu-central-1",
+    risk: 7.2,
+    lastSeen: "31m ago",
+    occurrenceCount: 4,
+  },
+  {
+    id: "fnd-005",
+    title: "sandbox bucket public policy",
+    account: "AWS sandbox",
+    severity: "Medium",
+    status: "Resolved",
+    scanner: "S3 public bucket",
+    resourceType: "S3 bucket",
+    region: "us-west-2",
+    risk: 4.8,
+    lastSeen: "1h ago",
+    occurrenceCount: 1,
+  },
+  {
+    id: "fnd-006",
+    title: "developer user MFA not enrolled",
+    account: "AWS sandbox",
+    severity: "Low",
+    status: "Triaged",
+    scanner: "IAM without MFA",
+    resourceType: "IAM user",
+    region: "global",
+    risk: 3.4,
+    lastSeen: "2h ago",
+    occurrenceCount: 1,
   },
 ];
 
@@ -127,9 +193,25 @@ export function App() {
   const [activeView, setActiveView] = useState<DashboardView>("overview");
   const [accounts, setAccounts] = useState(initialAccounts);
   const [accountForm, setAccountForm] = useState(initialAccountForm);
+  const [findingSearch, setFindingSearch] = useState("");
+  const [findingSeverityFilter, setFindingSeverityFilter] = useState<FindingSeverity | "All">(
+    "All",
+  );
+  const [findingStatusFilter, setFindingStatusFilter] = useState<FindingStatus | "All">("All");
   const [lastOnboardedAccount, setLastOnboardedAccount] = useState<string | null>(null);
 
-  const metrics = useMemo(() => buildMetrics(accounts), [accounts]);
+  const metrics = useMemo(() => buildMetrics(accounts, findings), [accounts]);
+  const filteredFindings = useMemo(
+    () =>
+      filterFindings(
+        findings,
+        findingSearch,
+        findingSeverityFilter,
+        findingStatusFilter,
+      ),
+    [findingSearch, findingSeverityFilter, findingStatusFilter],
+  );
+  const pageMeta = getPageMeta(activeView);
 
   function updateAccountForm<Field extends keyof AccountFormState>(
     field: Field,
@@ -188,7 +270,13 @@ export function App() {
           >
             Accounts
           </button>
-          <button type="button">Findings</button>
+          <button
+            className={activeView === "findings" ? "active" : undefined}
+            type="button"
+            onClick={() => setActiveView("findings")}
+          >
+            Findings
+          </button>
           <button type="button">Scans</button>
         </nav>
       </aside>
@@ -196,10 +284,8 @@ export function App() {
       <section className="workspace">
         <header className="workspace-header">
           <div>
-            <p className="eyebrow">
-              {activeView === "overview" ? "Cloud security dashboard" : "Account inventory"}
-            </p>
-            <h2>{activeView === "overview" ? "Security posture overview" : "Cloud accounts"}</h2>
+            <p className="eyebrow">{pageMeta.eyebrow}</p>
+            <h2>{pageMeta.title}</h2>
           </div>
           <div className="header-actions" aria-label="Page controls">
             {activeView === "overview" ? (
@@ -215,21 +301,30 @@ export function App() {
                   Run scan
                 </button>
               </>
-            ) : (
+            ) : null}
+            {activeView === "accounts" ? (
               <button className="primary-action" form="account-onboarding-form" type="submit">
                 Add account
               </button>
-            )}
+            ) : null}
+            {activeView === "findings" ? (
+              <button className="primary-action" type="button">
+                Export CSV
+              </button>
+            ) : null}
           </div>
         </header>
 
         {activeView === "overview" ? (
           <OverviewDashboard
             accounts={accounts}
+            findings={findings}
             metrics={metrics}
             onOpenAccounts={() => setActiveView("accounts")}
+            onOpenFindings={() => setActiveView("findings")}
           />
-        ) : (
+        ) : null}
+        {activeView === "accounts" ? (
           <AccountsPage
             accounts={accounts}
             accountForm={accountForm}
@@ -237,7 +332,19 @@ export function App() {
             onSubmitAccount={submitAccount}
             onUpdateAccountForm={updateAccountForm}
           />
-        )}
+        ) : null}
+        {activeView === "findings" ? (
+          <FindingsPage
+            findingSearch={findingSearch}
+            filteredFindings={filteredFindings}
+            severityFilter={findingSeverityFilter}
+            statusFilter={findingStatusFilter}
+            totalFindings={findings.length}
+            onSearchChange={setFindingSearch}
+            onSeverityFilterChange={setFindingSeverityFilter}
+            onStatusFilterChange={setFindingStatusFilter}
+          />
+        ) : null}
       </section>
     </main>
   );
@@ -245,13 +352,21 @@ export function App() {
 
 function OverviewDashboard({
   accounts,
+  findings,
   metrics,
   onOpenAccounts,
+  onOpenFindings,
 }: {
   accounts: AccountRow[];
+  findings: FindingRow[];
   metrics: MetricCard[];
   onOpenAccounts: () => void;
+  onOpenFindings: () => void;
 }) {
+  const priorityFindings = findings
+    .filter((finding) => finding.status !== "Resolved")
+    .slice(0, 3);
+
   return (
     <>
       <section className="metric-grid" aria-label="Security summary">
@@ -271,7 +386,9 @@ function OverviewDashboard({
               <p className="eyebrow">Priority queue</p>
               <h3 id="findings-title">Findings requiring action</h3>
             </div>
-            <a href="#findings">View all</a>
+            <button className="text-action" type="button" onClick={onOpenFindings}>
+              View all
+            </button>
           </div>
 
           <div className="finding-table" role="table" aria-label="Priority findings">
@@ -281,10 +398,10 @@ function OverviewDashboard({
               <span role="columnheader">Severity</span>
               <span role="columnheader">Last seen</span>
             </div>
-            {findings.map((finding) => (
-              <div className="table-row" role="row" key={finding.resource}>
+            {priorityFindings.map((finding) => (
+              <div className="table-row" role="row" key={finding.id}>
                 <div role="cell">
-                  <strong>{finding.resource}</strong>
+                  <strong>{finding.title}</strong>
                   <small>{finding.scanner}</small>
                 </div>
                 <span role="cell">{finding.account}</span>
@@ -366,6 +483,134 @@ function OverviewDashboard({
         </section>
       </section>
     </>
+  );
+}
+
+function FindingsPage({
+  filteredFindings,
+  findingSearch,
+  severityFilter,
+  statusFilter,
+  totalFindings,
+  onSearchChange,
+  onSeverityFilterChange,
+  onStatusFilterChange,
+}: {
+  filteredFindings: FindingRow[];
+  findingSearch: string;
+  severityFilter: FindingSeverity | "All";
+  statusFilter: FindingStatus | "All";
+  totalFindings: number;
+  onSearchChange: (value: string) => void;
+  onSeverityFilterChange: (value: FindingSeverity | "All") => void;
+  onStatusFilterChange: (value: FindingStatus | "All") => void;
+}) {
+  return (
+    <section className="findings-page">
+      <section className="panel" aria-labelledby="findings-table-title">
+        <div className="panel-heading compact">
+          <div>
+            <p className="eyebrow">Detection queue</p>
+            <h3 id="findings-table-title">Findings table</h3>
+          </div>
+          <span className="panel-count">
+            {filteredFindings.length}/{totalFindings}
+          </span>
+        </div>
+
+        <div className="filter-bar" aria-label="Finding filters">
+          <label className="search-field">
+            <span>Search</span>
+            <input
+              value={findingSearch}
+              onChange={(event) => onSearchChange(event.target.value)}
+            />
+          </label>
+          <label className="compact-field">
+            <span>Severity</span>
+            <select
+              value={severityFilter}
+              onChange={(event) =>
+                onSeverityFilterChange(event.target.value as FindingSeverity | "All")
+              }
+            >
+              <option>All</option>
+              <option>Critical</option>
+              <option>High</option>
+              <option>Medium</option>
+              <option>Low</option>
+            </select>
+          </label>
+          <label className="compact-field">
+            <span>Status</span>
+            <select
+              value={statusFilter}
+              onChange={(event) =>
+                onStatusFilterChange(event.target.value as FindingStatus | "All")
+              }
+            >
+              <option>All</option>
+              <option>Open</option>
+              <option>Triaged</option>
+              <option>Resolved</option>
+            </select>
+          </label>
+        </div>
+
+        <div className="findings-table" role="table" aria-label="Security findings">
+          <div className="findings-table-head" role="row">
+            <span role="columnheader">Finding</span>
+            <span role="columnheader">Account</span>
+            <span role="columnheader">Severity</span>
+            <span role="columnheader">Status</span>
+            <span role="columnheader">Risk</span>
+            <span role="columnheader">Last seen</span>
+          </div>
+          {filteredFindings.map((finding) => (
+            <FindingTableRow finding={finding} key={finding.id} />
+          ))}
+          {filteredFindings.length === 0 ? (
+            <div className="empty-state" role="row">
+              No findings match the selected filters.
+            </div>
+          ) : null}
+        </div>
+      </section>
+    </section>
+  );
+}
+
+function FindingTableRow({ finding }: { finding: FindingRow }) {
+  return (
+    <div className="findings-table-row" role="row">
+      <div className="finding-primary" role="cell">
+        <strong>{finding.title}</strong>
+        <small>
+          {finding.resourceType} - {finding.scanner} - {finding.region}
+        </small>
+      </div>
+      <span data-label="Account" role="cell">
+        {finding.account}
+      </span>
+      <span
+        className={`severity-pill ${finding.severity.toLowerCase()}`}
+        data-label="Severity"
+        role="cell"
+      >
+        {finding.severity}
+      </span>
+      <span className="status-cell" data-label="Status" role="cell">
+        <span className={`status-chip ${statusClass(finding.status)}`}>
+          {finding.status}
+        </span>
+      </span>
+      <strong className="risk-score" data-label="Risk" role="cell">
+        {finding.risk.toFixed(1)}
+      </strong>
+      <span data-label="Last seen" role="cell">
+        {finding.lastSeen}
+      </span>
+    </div>
   );
 }
 
@@ -524,9 +769,11 @@ function AccountSummaryRow({ account }: { account: AccountRow }) {
   );
 }
 
-function buildMetrics(accounts: AccountRow[]): MetricCard[] {
-  const openFindings = accounts.reduce((total, account) => total + account.findings, 0);
-  const criticalRiskAccounts = accounts.filter((account) => account.risk >= 80).length;
+function buildMetrics(accounts: AccountRow[], allFindings: FindingRow[]): MetricCard[] {
+  const openFindings = allFindings.filter((finding) => finding.status === "Open").length;
+  const criticalFindings = allFindings.filter(
+    (finding) => finding.severity === "Critical" && finding.status !== "Resolved",
+  ).length;
   const activeAccounts = accounts.filter((account) => account.status === "Active").length;
 
   return [
@@ -539,19 +786,54 @@ function buildMetrics(accounts: AccountRow[]): MetricCard[] {
     {
       label: "Open findings",
       value: String(openFindings),
-      detail: "8 need review today",
+      detail: `${openFindings} need review today`,
       tone: "warning",
     },
     {
       label: "Critical risk",
-      value: String(criticalRiskAccounts),
-      detail: "Accounts at 80+ risk",
+      value: String(criticalFindings),
+      detail: "Critical open findings",
       tone: "danger",
     },
     { label: "Scan coverage", value: "92%", detail: "Last run 12 minutes ago", tone: "calm" },
   ];
 }
 
-function statusClass(status: AccountStatus | ScanRow["status"]) {
+function filterFindings(
+  allFindings: FindingRow[],
+  search: string,
+  severity: FindingSeverity | "All",
+  status: FindingStatus | "All",
+) {
+  const normalizedSearch = search.trim().toLowerCase();
+
+  return allFindings.filter((finding) => {
+    const matchesSearch =
+      normalizedSearch.length === 0 ||
+      [
+        finding.title,
+        finding.account,
+        finding.scanner,
+        finding.resourceType,
+        finding.region,
+      ].some((value) => value.toLowerCase().includes(normalizedSearch));
+    const matchesSeverity = severity === "All" || finding.severity === severity;
+    const matchesStatus = status === "All" || finding.status === status;
+
+    return matchesSearch && matchesSeverity && matchesStatus;
+  });
+}
+
+function getPageMeta(view: DashboardView) {
+  if (view === "accounts") {
+    return { eyebrow: "Account inventory", title: "Cloud accounts" };
+  }
+  if (view === "findings") {
+    return { eyebrow: "Finding management", title: "Security findings" };
+  }
+  return { eyebrow: "Cloud security dashboard", title: "Security posture overview" };
+}
+
+function statusClass(status: AccountStatus | FindingStatus | ScanRow["status"]) {
   return status.toLowerCase().replace(" ", "-");
 }
