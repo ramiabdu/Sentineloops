@@ -11,6 +11,7 @@ Dashboard UI for SentinelOps.
 ## Initial screens
 
 - posture metric cards
+- accounts page with onboarding form
 - priority findings table
 - severity breakdown bars
 - cloud account inventory

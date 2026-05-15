@@ -27,7 +27,7 @@ The execution roadmap is derived from the provided 30-day GitHub plan.
 
 ### Phase 3 — Execution and UI
 - frontend dashboard skeleton
-- accounts page
+- accounts page and onboarding form
 - findings table
 - severity charts
 - finding details

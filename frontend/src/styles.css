@@ -91,17 +91,19 @@ a {
   gap: 8px;
 }
 
-.main-nav a {
+.main-nav button {
+  text-align: left;
   min-height: 40px;
   padding: 10px 12px;
   color: #deebe7;
-  text-decoration: none;
+  background: transparent;
   border: 1px solid transparent;
   border-radius: 6px;
+  cursor: pointer;
 }
 
-.main-nav a:hover,
-.main-nav a.active {
+.main-nav button:hover,
+.main-nav button.active {
   color: #ffffff;
   background: rgb(255 255 255 / 9%);
   border-color: rgb(255 255 255 / 14%);
@@ -169,6 +171,17 @@ a {
   background: #1b7c5e;
 }
 
+.text-action {
+  min-height: 30px;
+  padding: 0;
+  color: #63736d;
+  font-size: 14px;
+  font-weight: 750;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
 .metric-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -213,7 +226,13 @@ a {
 .table-row small,
 .account-row small,
 .scan-row small,
-.panel-heading a {
+.panel-heading a,
+.text-action,
+.panel-count,
+.accounts-table-head,
+.accounts-table-row small,
+.field span,
+.form-status {
   color: #63736d;
 }
 
@@ -380,7 +399,8 @@ a {
 }
 
 .account-list,
-.scan-list {
+.scan-list,
+.accounts-table {
   display: grid;
   gap: 1px;
   overflow: hidden;
@@ -389,7 +409,8 @@ a {
 }
 
 .account-row,
-.scan-row {
+.scan-row,
+.accounts-table-row {
   display: grid;
   align-items: center;
   min-height: 58px;
@@ -403,7 +424,8 @@ a {
 }
 
 .account-row + .account-row,
-.scan-row + .scan-row {
+.scan-row + .scan-row,
+.accounts-table-row + .accounts-table-row {
   border-top: 1px solid #e7ede9;
 }
 
@@ -427,9 +449,118 @@ a {
 }
 
 .status-chip.needs-review,
-.status-chip.queued {
+.status-chip.queued,
+.status-chip.pending {
   color: #88530e;
   background: #fff0d3;
+}
+
+.accounts-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.78fr) minmax(0, 1.22fr);
+  align-items: start;
+  gap: 14px;
+}
+
+.onboarding-panel {
+  position: sticky;
+  top: 24px;
+}
+
+.account-form {
+  display: grid;
+  gap: 14px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+}
+
+.field span {
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 11px;
+  color: #17211d;
+  background: #fbfcfb;
+  border: 1px solid #cfdbd5;
+  border-radius: 6px;
+  outline: none;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: #1b7c5e;
+  box-shadow: 0 0 0 3px rgb(27 124 94 / 14%);
+}
+
+.form-status {
+  min-height: 34px;
+  margin: 0;
+  padding: 8px 10px;
+  color: #23664d;
+  font-size: 14px;
+  font-weight: 700;
+  background: #e4f6ee;
+  border: 1px solid #c9eadb;
+  border-radius: 6px;
+}
+
+.panel-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 30px;
+  padding: 0 9px;
+  font-weight: 800;
+  background: #eef3ef;
+  border-radius: 999px;
+}
+
+.accounts-table-head,
+.accounts-table-row {
+  display: grid;
+  grid-template-columns:
+    minmax(180px, 1.2fr) minmax(70px, 0.45fr) minmax(104px, 0.65fr)
+    minmax(72px, 0.4fr) minmax(52px, 0.32fr) minmax(96px, 0.55fr);
+  gap: 12px;
+  align-items: center;
+  padding: 0 12px;
+}
+
+.accounts-table-head {
+  min-height: 38px;
+  color: #52645d;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  background: #f0f4f1;
+}
+
+.accounts-table-row div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.accounts-table-row strong,
+.accounts-table-row small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .scan-row {
@@ -464,6 +595,14 @@ a {
     grid-template-columns: 1fr;
   }
 
+  .accounts-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .onboarding-panel {
+    position: static;
+  }
+
   .wide-panel {
     grid-column: auto;
   }
@@ -483,7 +622,7 @@ a {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
-  .main-nav a {
+  .main-nav button {
     text-align: center;
   }
 
@@ -520,12 +659,30 @@ a {
     display: none;
   }
 
-  .table-row {
+  .table-row,
+  .accounts-table-row {
     grid-template-columns: 1fr;
     gap: 8px;
     align-items: start;
     min-height: 0;
     padding: 14px;
+  }
+
+  .accounts-table-row [data-label] {
+    display: grid;
+    gap: 3px;
+  }
+
+  .accounts-table-row [data-label]::before {
+    content: attr(data-label);
+    color: #63736d;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .accounts-table-head {
+    display: none;
   }
 
   .account-row {
@@ -538,5 +695,9 @@ a {
 
   .workspace-header h2 {
     font-size: 24px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
   }
 }

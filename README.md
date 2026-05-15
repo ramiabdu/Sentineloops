@@ -24,7 +24,7 @@ The current implementation establishes the platform baseline:
 - SQLAlchemy models for accounts, scans, and findings
 - Alembic bootstrap and initial schema migration
 - local Docker Compose stack for API, PostgreSQL, and Redis
-- frontend dashboard skeleton created with posture, findings, account, and scan panels
+- frontend dashboard skeleton created with posture, findings, account, scan, and onboarding flows
 - architecture and decision docs updated to match the codebase
 
 ## Planned architecture
@@ -123,7 +123,7 @@ Required scanners include:
 - old access keys
 - missing storage encryption
 
-The scanner layer now exposes typed plugin contracts, a registry, and a runner. Concrete AWS scanners detect public S3 bucket exposure, public security group ingress, and IAM console users without MFA. Scanner findings can be persisted with deduplication, first/last seen tracking, occurrence counts, account and scan linkage, automatic risk scores, read APIs, queued scan APIs, scan status summaries, and a worker execution model that processes scans into completed or failed states. The frontend now has a responsive dashboard skeleton for posture metrics, priority findings, severity distribution, account inventory, and scan activity.
+The scanner layer now exposes typed plugin contracts, a registry, and a runner. Concrete AWS scanners detect public S3 bucket exposure, public security group ingress, and IAM console users without MFA. Scanner findings can be persisted with deduplication, first/last seen tracking, occurrence counts, account and scan linkage, automatic risk scores, read APIs, queued scan APIs, scan status summaries, and a worker execution model that processes scans into completed or failed states. The frontend now has a responsive dashboard skeleton for posture metrics, priority findings, severity distribution, account inventory, scan activity, and account onboarding.
 
 ## Development roadmap
 

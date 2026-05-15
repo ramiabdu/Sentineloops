@@ -63,6 +63,7 @@ backend/app/
 
 The Vite React frontend now starts on a responsive dashboard skeleton with:
 - posture metric cards
+- account navigation and onboarding form
 - priority findings preview
 - severity distribution bars
 - cloud account inventory
