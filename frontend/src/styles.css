@@ -367,6 +367,19 @@ a {
   border-top: 1px solid #e7ede9;
 }
 
+.table-row-button {
+  width: 100%;
+  color: inherit;
+  text-align: left;
+  background: #ffffff;
+  border: 0;
+  cursor: pointer;
+}
+
+.table-row-button:hover {
+  background: #f7faf8;
+}
+
 .table-row div {
   display: grid;
   gap: 4px;
@@ -709,6 +722,13 @@ a {
   display: grid;
 }
 
+.findings-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 340px);
+  align-items: start;
+  gap: 14px;
+}
+
 .filter-bar {
   display: grid;
   grid-template-columns: minmax(220px, 1fr) 160px 150px;
@@ -751,8 +771,8 @@ a {
 .findings-table-row {
   display: grid;
   grid-template-columns:
-    minmax(240px, 1.45fr) minmax(130px, 0.72fr) minmax(94px, 0.5fr)
-    minmax(96px, 0.5fr) minmax(58px, 0.32fr) minmax(88px, 0.46fr);
+    minmax(170px, 1.45fr) minmax(100px, 0.68fr) minmax(82px, 0.48fr)
+    minmax(84px, 0.48fr) 54px minmax(74px, 0.42fr) 70px;
   gap: 12px;
   align-items: center;
   padding: 0 12px;
@@ -771,6 +791,11 @@ a {
   min-height: 68px;
 }
 
+.findings-table-row.selected {
+  background: #f7fbf9;
+  box-shadow: inset 3px 0 0 #1b7c5e;
+}
+
 .finding-primary {
   display: grid;
   gap: 4px;
@@ -786,6 +811,114 @@ a {
 
 .risk-score {
   font-variant-numeric: tabular-nums;
+}
+
+.detail-action-cell {
+  display: flex;
+  justify-content: end;
+}
+
+.detail-action {
+  min-height: 30px;
+  padding: 0 9px;
+  color: #1b7c5e;
+  font-size: 13px;
+  font-weight: 800;
+  background: #e4f6ee;
+  border: 1px solid #c9eadb;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.finding-details-panel {
+  position: sticky;
+  top: 24px;
+  display: grid;
+  gap: 16px;
+}
+
+.detail-header {
+  display: grid;
+  gap: 12px;
+}
+
+.detail-header h3 {
+  line-height: 1.2;
+}
+
+.detail-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.detail-risk {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  background: #f5f8f6;
+  border: 1px solid #dce6e0;
+  border-radius: 8px;
+}
+
+.detail-risk span,
+.detail-risk small,
+.detail-grid dt,
+.detail-section p {
+  color: #63736d;
+}
+
+.detail-risk strong {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.detail-grid div {
+  min-width: 0;
+  padding: 10px;
+  background: #fbfcfb;
+  border: 1px solid #e1e8e4;
+  border-radius: 6px;
+}
+
+.detail-grid dt {
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.detail-grid dd {
+  overflow: hidden;
+  margin: 0;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detail-section {
+  display: grid;
+  gap: 6px;
+}
+
+.detail-section h4,
+.detail-section p {
+  margin: 0;
+}
+
+.detail-section h4 {
+  font-size: 14px;
+}
+
+.detail-section p {
+  line-height: 1.45;
 }
 
 .empty-state {
@@ -835,6 +968,14 @@ a {
 
   .filter-bar {
     grid-template-columns: 1fr 160px 150px;
+  }
+
+  .findings-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .finding-details-panel {
+    position: static;
   }
 
   .risk-card-grid {

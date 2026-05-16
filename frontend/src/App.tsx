@@ -209,11 +209,16 @@ export function App() {
     "All",
   );
   const [findingStatusFilter, setFindingStatusFilter] = useState<FindingStatus | "All">("All");
+  const [selectedFindingId, setSelectedFindingId] = useState(findings[0]?.id ?? "");
   const [lastOnboardedAccount, setLastOnboardedAccount] = useState<string | null>(null);
 
   const metrics = useMemo(() => buildMetrics(accounts, findings), [accounts]);
   const severitySummary = useMemo(() => buildSeveritySummary(findings), []);
   const riskCards = useMemo(() => buildRiskCards(accounts, findings), [accounts]);
+  const selectedFinding = useMemo(
+    () => findings.find((finding) => finding.id === selectedFindingId) ?? findings[0] ?? null,
+    [selectedFindingId],
+  );
   const filteredFindings = useMemo(
     () =>
       filterFindings(
@@ -253,6 +258,11 @@ export function App() {
     setAccounts((current) => [nextAccount, ...current]);
     setAccountForm(initialAccountForm);
     setLastOnboardedAccount(nextAccount.name);
+  }
+
+  function openFindingDetails(findingId: string) {
+    setSelectedFindingId(findingId);
+    setActiveView("findings");
   }
 
   return (
@@ -336,6 +346,7 @@ export function App() {
             riskCards={riskCards}
             severitySummary={severitySummary}
             onOpenAccounts={() => setActiveView("accounts")}
+            onOpenFindingDetails={openFindingDetails}
             onOpenFindings={() => setActiveView("findings")}
           />
         ) : null}
@@ -353,9 +364,12 @@ export function App() {
             findingSearch={findingSearch}
             filteredFindings={filteredFindings}
             severityFilter={findingSeverityFilter}
+            selectedFinding={selectedFinding}
+            selectedFindingId={selectedFindingId}
             statusFilter={findingStatusFilter}
             totalFindings={findings.length}
             onSearchChange={setFindingSearch}
+            onSelectFinding={setSelectedFindingId}
             onSeverityFilterChange={setFindingSeverityFilter}
             onStatusFilterChange={setFindingStatusFilter}
           />
@@ -372,6 +386,7 @@ function OverviewDashboard({
   riskCards,
   severitySummary,
   onOpenAccounts,
+  onOpenFindingDetails,
   onOpenFindings,
 }: {
   accounts: AccountRow[];
@@ -380,6 +395,7 @@ function OverviewDashboard({
   riskCards: RiskCard[];
   severitySummary: SeverityBreakdownRow[];
   onOpenAccounts: () => void;
+  onOpenFindingDetails: (findingId: string) => void;
   onOpenFindings: () => void;
 }) {
   const priorityFindings = findings
@@ -429,7 +445,13 @@ function OverviewDashboard({
               <span role="columnheader">Last seen</span>
             </div>
             {priorityFindings.map((finding) => (
-              <div className="table-row" role="row" key={finding.id}>
+              <button
+                aria-label={`Open details for ${finding.title}`}
+                className="table-row table-row-button"
+                key={finding.id}
+                onClick={() => onOpenFindingDetails(finding.id)}
+                type="button"
+              >
                 <div role="cell">
                   <strong>{finding.title}</strong>
                   <small>{finding.scanner}</small>
@@ -439,7 +461,7 @@ function OverviewDashboard({
                   {finding.severity}
                 </span>
                 <span role="cell">{finding.lastSeen}</span>
-              </div>
+              </button>
             ))}
           </div>
         </section>
@@ -555,99 +577,127 @@ function FindingsPage({
   filteredFindings,
   findingSearch,
   severityFilter,
+  selectedFinding,
+  selectedFindingId,
   statusFilter,
   totalFindings,
   onSearchChange,
+  onSelectFinding,
   onSeverityFilterChange,
   onStatusFilterChange,
 }: {
   filteredFindings: FindingRow[];
   findingSearch: string;
   severityFilter: FindingSeverity | "All";
+  selectedFinding: FindingRow | null;
+  selectedFindingId: string;
   statusFilter: FindingStatus | "All";
   totalFindings: number;
   onSearchChange: (value: string) => void;
+  onSelectFinding: (findingId: string) => void;
   onSeverityFilterChange: (value: FindingSeverity | "All") => void;
   onStatusFilterChange: (value: FindingStatus | "All") => void;
 }) {
   return (
     <section className="findings-page">
-      <section className="panel" aria-labelledby="findings-table-title">
-        <div className="panel-heading compact">
-          <div>
-            <p className="eyebrow">Detection queue</p>
-            <h3 id="findings-table-title">Findings table</h3>
-          </div>
-          <span className="panel-count">
-            {filteredFindings.length}/{totalFindings}
-          </span>
-        </div>
-
-        <div className="filter-bar" aria-label="Finding filters">
-          <label className="search-field">
-            <span>Search</span>
-            <input
-              value={findingSearch}
-              onChange={(event) => onSearchChange(event.target.value)}
-            />
-          </label>
-          <label className="compact-field">
-            <span>Severity</span>
-            <select
-              value={severityFilter}
-              onChange={(event) =>
-                onSeverityFilterChange(event.target.value as FindingSeverity | "All")
-              }
-            >
-              <option>All</option>
-              <option>Critical</option>
-              <option>High</option>
-              <option>Medium</option>
-              <option>Low</option>
-            </select>
-          </label>
-          <label className="compact-field">
-            <span>Status</span>
-            <select
-              value={statusFilter}
-              onChange={(event) =>
-                onStatusFilterChange(event.target.value as FindingStatus | "All")
-              }
-            >
-              <option>All</option>
-              <option>Open</option>
-              <option>Triaged</option>
-              <option>Resolved</option>
-            </select>
-          </label>
-        </div>
-
-        <div className="findings-table" role="table" aria-label="Security findings">
-          <div className="findings-table-head" role="row">
-            <span role="columnheader">Finding</span>
-            <span role="columnheader">Account</span>
-            <span role="columnheader">Severity</span>
-            <span role="columnheader">Status</span>
-            <span role="columnheader">Risk</span>
-            <span role="columnheader">Last seen</span>
-          </div>
-          {filteredFindings.map((finding) => (
-            <FindingTableRow finding={finding} key={finding.id} />
-          ))}
-          {filteredFindings.length === 0 ? (
-            <div className="empty-state" role="row">
-              No findings match the selected filters.
+      <div className="findings-layout">
+        <section className="panel" aria-labelledby="findings-table-title">
+          <div className="panel-heading compact">
+            <div>
+              <p className="eyebrow">Detection queue</p>
+              <h3 id="findings-table-title">Findings table</h3>
             </div>
-          ) : null}
-        </div>
-      </section>
+            <span className="panel-count">
+              {filteredFindings.length}/{totalFindings}
+            </span>
+          </div>
+
+          <div className="filter-bar" aria-label="Finding filters">
+            <label className="search-field">
+              <span>Search</span>
+              <input
+                value={findingSearch}
+                onChange={(event) => onSearchChange(event.target.value)}
+              />
+            </label>
+            <label className="compact-field">
+              <span>Severity</span>
+              <select
+                value={severityFilter}
+                onChange={(event) =>
+                  onSeverityFilterChange(event.target.value as FindingSeverity | "All")
+                }
+              >
+                <option>All</option>
+                <option>Critical</option>
+                <option>High</option>
+                <option>Medium</option>
+                <option>Low</option>
+              </select>
+            </label>
+            <label className="compact-field">
+              <span>Status</span>
+              <select
+                value={statusFilter}
+                onChange={(event) =>
+                  onStatusFilterChange(event.target.value as FindingStatus | "All")
+                }
+              >
+                <option>All</option>
+                <option>Open</option>
+                <option>Triaged</option>
+                <option>Resolved</option>
+              </select>
+            </label>
+          </div>
+
+          <div className="findings-table" role="table" aria-label="Security findings">
+            <div className="findings-table-head" role="row">
+              <span role="columnheader">Finding</span>
+              <span role="columnheader">Account</span>
+              <span role="columnheader">Severity</span>
+              <span role="columnheader">Status</span>
+              <span role="columnheader">Risk</span>
+              <span role="columnheader">Last seen</span>
+              <span role="columnheader">Action</span>
+            </div>
+            {filteredFindings.map((finding) => (
+              <FindingTableRow
+                finding={finding}
+                isSelected={finding.id === selectedFindingId}
+                key={finding.id}
+                onSelectFinding={onSelectFinding}
+              />
+            ))}
+            {filteredFindings.length === 0 ? (
+              <div className="empty-state" role="row">
+                No findings match the selected filters.
+              </div>
+            ) : null}
+          </div>
+        </section>
+
+        <FindingDetailsPanel finding={selectedFinding} />
+      </div>
     </section>
   );
 }
 
-function FindingTableRow({ finding }: { finding: FindingRow }) {
+function FindingTableRow({
+  finding,
+  isSelected,
+  onSelectFinding,
+}: {
+  finding: FindingRow;
+  isSelected: boolean;
+  onSelectFinding: (findingId: string) => void;
+}) {
   return (
-    <div className="findings-table-row" role="row">
+    <div
+      aria-current={isSelected ? "true" : undefined}
+      className={`findings-table-row ${isSelected ? "selected" : ""}`}
+      role="row"
+    >
       <div className="finding-primary" role="cell">
         <strong>{finding.title}</strong>
         <small>
@@ -675,7 +725,88 @@ function FindingTableRow({ finding }: { finding: FindingRow }) {
       <span data-label="Last seen" role="cell">
         {finding.lastSeen}
       </span>
+      <span className="detail-action-cell" data-label="Action" role="cell">
+        <button
+          className="detail-action"
+          onClick={() => onSelectFinding(finding.id)}
+          type="button"
+        >
+          Details
+        </button>
+      </span>
     </div>
+  );
+}
+
+function FindingDetailsPanel({ finding }: { finding: FindingRow | null }) {
+  if (finding === null) {
+    return (
+      <aside className="panel finding-details-panel" aria-labelledby="finding-details-title">
+        <div className="empty-state" id="finding-details-title">
+          Select a finding to inspect.
+        </div>
+      </aside>
+    );
+  }
+
+  return (
+    <aside className="panel finding-details-panel" aria-labelledby="finding-details-title">
+      <div className="detail-header">
+        <div>
+          <p className="eyebrow">{finding.id}</p>
+          <h3 id="finding-details-title">{finding.title}</h3>
+        </div>
+        <div className="detail-badges">
+          <span className={`severity-pill ${finding.severity.toLowerCase()}`}>
+            {finding.severity}
+          </span>
+          <span className={`status-chip ${statusClass(finding.status)}`}>{finding.status}</span>
+        </div>
+      </div>
+
+      <div className="detail-risk">
+        <span>Risk score</span>
+        <strong>{finding.risk.toFixed(1)}</strong>
+        <small>{findingRiskSummary(finding)}</small>
+      </div>
+
+      <dl className="detail-grid">
+        <div>
+          <dt>Account</dt>
+          <dd>{finding.account}</dd>
+        </div>
+        <div>
+          <dt>Resource</dt>
+          <dd>{finding.resourceType}</dd>
+        </div>
+        <div>
+          <dt>Region</dt>
+          <dd>{finding.region}</dd>
+        </div>
+        <div>
+          <dt>Scanner</dt>
+          <dd>{finding.scanner}</dd>
+        </div>
+        <div>
+          <dt>Last seen</dt>
+          <dd>{finding.lastSeen}</dd>
+        </div>
+        <div>
+          <dt>Occurrences</dt>
+          <dd>{finding.occurrenceCount}</dd>
+        </div>
+      </dl>
+
+      <section className="detail-section" aria-labelledby="evidence-title">
+        <h4 id="evidence-title">Evidence</h4>
+        <p>{findingEvidence(finding)}</p>
+      </section>
+
+      <section className="detail-section" aria-labelledby="remediation-title">
+        <h4 id="remediation-title">Remediation</h4>
+        <p>{findingRemediation(finding)}</p>
+      </section>
+    </aside>
   );
 }
 
@@ -946,6 +1077,41 @@ function riskTone(score: number, maxScore: 10 | 100): RiskCard["tone"] {
   }
 
   return "steady";
+}
+
+function findingRiskSummary(finding: FindingRow) {
+  if (finding.risk >= 8) {
+    return "Prioritize this finding before lower-risk work.";
+  }
+
+  if (finding.risk >= 5.5) {
+    return "Triage this finding during the next review cycle.";
+  }
+
+  return "Track this finding and confirm it stays contained.";
+}
+
+function findingEvidence(finding: FindingRow) {
+  return `${finding.scanner} observed ${finding.title} in ${finding.region} on ${finding.account}.`;
+}
+
+function findingRemediation(finding: FindingRow) {
+  if (finding.scanner === "Security group exposure") {
+    return [
+      "Restrict public ingress to trusted CIDR ranges",
+      "and remove unused internet-facing rules.",
+    ].join(" ");
+  }
+
+  if (finding.scanner === "S3 public bucket") {
+    return "Remove public ACLs or bucket policies, then confirm block public access is enabled.";
+  }
+
+  if (finding.scanner === "IAM without MFA") {
+    return "Require MFA enrollment before the user can continue using console access.";
+  }
+
+  return "Review the affected resource configuration and apply the least-privilege baseline.";
 }
 
 function filterFindings(

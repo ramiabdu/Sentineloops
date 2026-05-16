@@ -30,7 +30,7 @@ The execution roadmap is derived from the provided 30-day GitHub plan.
 - accounts page and onboarding form
 - findings table UI with filters
 - severity charts
-- finding details
+- finding details drawer/page
 
 ### Phase 4 — Hardening and release
 - authentication
