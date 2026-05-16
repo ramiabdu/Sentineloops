@@ -14,7 +14,8 @@ Dashboard UI for SentinelOps.
 - accounts page with onboarding form
 - priority findings table
 - filterable findings table
-- severity breakdown bars
+- severity charts
+- risk cards
 - cloud account inventory
 - scan activity panel
 - finding details

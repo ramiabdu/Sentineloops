@@ -189,6 +189,7 @@ a {
 }
 
 .metric-card,
+.risk-card,
 .panel {
   background: #ffffff;
   border: 1px solid #dbe4df;
@@ -247,6 +248,59 @@ a {
 
 .metric-card small {
   line-height: 1.35;
+}
+
+.risk-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.risk-card {
+  display: grid;
+  gap: 8px;
+  min-height: 118px;
+  padding: 16px;
+  border-left-width: 4px;
+}
+
+.risk-card.steady {
+  border-left-color: #2f9271;
+}
+
+.risk-card.warning {
+  border-left-color: #d1942d;
+}
+
+.risk-card.danger {
+  border-left-color: #c54252;
+}
+
+.risk-card span,
+.risk-card small,
+.risk-card em {
+  color: #63736d;
+}
+
+.risk-card strong {
+  overflow: hidden;
+  font-size: 30px;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.risk-card small {
+  overflow: hidden;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.risk-card em {
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 750;
 }
 
 .dashboard-grid {
@@ -360,14 +414,70 @@ a {
   background: #dff5eb;
 }
 
+.severity-chart {
+  display: grid;
+  gap: 16px;
+}
+
+.severity-chart-total {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.severity-chart-total strong {
+  font-size: 34px;
+  line-height: 1;
+}
+
+.severity-chart-total span,
+.bar-meta {
+  color: #63736d;
+}
+
+.severity-stack {
+  display: flex;
+  width: 100%;
+  height: 14px;
+  overflow: hidden;
+  background: #edf1ee;
+  border-radius: 999px;
+}
+
+.severity-stack-segment {
+  display: block;
+  height: 100%;
+}
+
+.severity-stack-segment + .severity-stack-segment {
+  border-left: 2px solid #ffffff;
+}
+
+.severity-stack-segment.critical {
+  background: #c54252;
+}
+
+.severity-stack-segment.high {
+  background: #d1942d;
+}
+
+.severity-stack-segment.medium {
+  background: #4c78a8;
+}
+
+.severity-stack-segment.low {
+  background: #58a676;
+}
+
 .severity-bars {
   display: grid;
-  gap: 15px;
+  gap: 13px;
 }
 
 .bar-row {
   display: grid;
-  gap: 7px;
+  gap: 6px;
 }
 
 .bar-label {
@@ -405,6 +515,11 @@ a {
 
 .bar-fill.low {
   background: #58a676;
+}
+
+.bar-meta {
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .account-list,
@@ -720,6 +835,10 @@ a {
 
   .filter-bar {
     grid-template-columns: 1fr 160px 150px;
+  }
+
+  .risk-card-grid {
+    grid-template-columns: 1fr;
   }
 
   .onboarding-panel {

@@ -48,12 +48,30 @@ type FindingRow = {
   occurrenceCount: number;
 };
 
+type SeverityBreakdownRow = {
+  label: FindingSeverity;
+  count: number;
+  openCount: number;
+  percent: number;
+  className: Lowercase<FindingSeverity>;
+};
+
+type RiskCard = {
+  label: string;
+  value: string;
+  detail: string;
+  meta: string;
+  tone: "steady" | "warning" | "danger";
+};
+
 type ScanRow = {
   account: string;
   status: "Completed" | "Running" | "Queued";
   duration: string;
   findings: number;
 };
+
+const severityOrder: FindingSeverity[] = ["Critical", "High", "Medium", "Low"];
 
 const initialAccounts: AccountRow[] = [
   {
@@ -182,13 +200,6 @@ const scans: ScanRow[] = [
   { account: "AWS sandbox", status: "Queued", duration: "Pending", findings: 0 },
 ];
 
-const severityBreakdown = [
-  { label: "Critical", value: 6, max: 24, className: "critical" },
-  { label: "High", value: 8, max: 24, className: "high" },
-  { label: "Medium", value: 7, max: 24, className: "medium" },
-  { label: "Low", value: 3, max: 24, className: "low" },
-];
-
 export function App() {
   const [activeView, setActiveView] = useState<DashboardView>("overview");
   const [accounts, setAccounts] = useState(initialAccounts);
@@ -201,6 +212,8 @@ export function App() {
   const [lastOnboardedAccount, setLastOnboardedAccount] = useState<string | null>(null);
 
   const metrics = useMemo(() => buildMetrics(accounts, findings), [accounts]);
+  const severitySummary = useMemo(() => buildSeveritySummary(findings), []);
+  const riskCards = useMemo(() => buildRiskCards(accounts, findings), [accounts]);
   const filteredFindings = useMemo(
     () =>
       filterFindings(
@@ -320,6 +333,8 @@ export function App() {
             accounts={accounts}
             findings={findings}
             metrics={metrics}
+            riskCards={riskCards}
+            severitySummary={severitySummary}
             onOpenAccounts={() => setActiveView("accounts")}
             onOpenFindings={() => setActiveView("findings")}
           />
@@ -354,12 +369,16 @@ function OverviewDashboard({
   accounts,
   findings,
   metrics,
+  riskCards,
+  severitySummary,
   onOpenAccounts,
   onOpenFindings,
 }: {
   accounts: AccountRow[];
   findings: FindingRow[];
   metrics: MetricCard[];
+  riskCards: RiskCard[];
+  severitySummary: SeverityBreakdownRow[];
   onOpenAccounts: () => void;
   onOpenFindings: () => void;
 }) {
@@ -375,6 +394,17 @@ function OverviewDashboard({
             <span>{metric.label}</span>
             <strong>{metric.value}</strong>
             <small>{metric.detail}</small>
+          </article>
+        ))}
+      </section>
+
+      <section className="risk-card-grid" aria-label="Risk cards">
+        {riskCards.map((card) => (
+          <article className={`risk-card ${card.tone}`} key={card.label}>
+            <span>{card.label}</span>
+            <strong>{card.value}</strong>
+            <small>{card.detail}</small>
+            <em>{card.meta}</em>
           </article>
         ))}
       </section>
@@ -421,22 +451,7 @@ function OverviewDashboard({
               <h3 id="severity-title">Severity breakdown</h3>
             </div>
           </div>
-          <div className="severity-bars" aria-label="Findings by severity">
-            {severityBreakdown.map((severity) => (
-              <div className="bar-row" key={severity.label}>
-                <div className="bar-label">
-                  <span>{severity.label}</span>
-                  <strong>{severity.value}</strong>
-                </div>
-                <div className="bar-track">
-                  <span
-                    className={`bar-fill ${severity.className}`}
-                    style={{ width: `${(severity.value / severity.max) * 100}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
+          <SeverityChart severitySummary={severitySummary} />
         </section>
 
         <section className="panel" id="accounts" aria-labelledby="accounts-title">
@@ -483,6 +498,56 @@ function OverviewDashboard({
         </section>
       </section>
     </>
+  );
+}
+
+function SeverityChart({
+  severitySummary,
+}: {
+  severitySummary: SeverityBreakdownRow[];
+}) {
+  const totalFindings = severitySummary.reduce((total, severity) => total + severity.count, 0);
+  const openFindings = severitySummary.reduce(
+    (total, severity) => total + severity.openCount,
+    0,
+  );
+
+  return (
+    <div className="severity-chart">
+      <div className="severity-chart-total">
+        <strong>{totalFindings}</strong>
+        <span>{openFindings} open</span>
+      </div>
+
+      <div className="severity-stack" aria-label="Severity distribution">
+        {severitySummary.map((severity) => (
+          <span
+            aria-label={`${severity.label}: ${severity.count}`}
+            className={`severity-stack-segment ${severity.className}`}
+            key={severity.label}
+            style={{ width: `${severity.percent}%` }}
+          />
+        ))}
+      </div>
+
+      <div className="severity-bars" aria-label="Findings by severity">
+        {severitySummary.map((severity) => (
+          <div className="bar-row" key={severity.label}>
+            <div className="bar-label">
+              <span>{severity.label}</span>
+              <strong>{severity.count}</strong>
+            </div>
+            <div className="bar-track">
+              <span
+                className={`bar-fill ${severity.className}`}
+                style={{ width: `${barWidth(severity)}%` }}
+              />
+            </div>
+            <small className="bar-meta">{severity.openCount} open</small>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -797,6 +862,90 @@ function buildMetrics(accounts: AccountRow[], allFindings: FindingRow[]): Metric
     },
     { label: "Scan coverage", value: "92%", detail: "Last run 12 minutes ago", tone: "calm" },
   ];
+}
+
+function buildSeveritySummary(allFindings: FindingRow[]): SeverityBreakdownRow[] {
+  const totalFindings = allFindings.length;
+
+  return severityOrder.map((severity) => {
+    const matchingFindings = allFindings.filter((finding) => finding.severity === severity);
+    const openCount = matchingFindings.filter((finding) => finding.status === "Open").length;
+    const percent = totalFindings === 0 ? 0 : (matchingFindings.length / totalFindings) * 100;
+
+    return {
+      label: severity,
+      count: matchingFindings.length,
+      openCount,
+      percent,
+      className: severity.toLowerCase() as Lowercase<FindingSeverity>,
+    };
+  });
+}
+
+function buildRiskCards(accounts: AccountRow[], allFindings: FindingRow[]): RiskCard[] {
+  const activeFindings = allFindings.filter((finding) => finding.status !== "Resolved");
+  const highestRiskAccount = accounts.reduce<AccountRow | null>(
+    (currentHighest, account) =>
+      currentHighest === null || account.risk > currentHighest.risk ? account : currentHighest,
+    null,
+  );
+  const highestRiskFinding = activeFindings.reduce<FindingRow | null>(
+    (currentHighest, finding) =>
+      currentHighest === null || finding.risk > currentHighest.risk ? finding : currentHighest,
+    null,
+  );
+  const repeatSignals = allFindings.reduce(
+    (total, finding) => total + finding.occurrenceCount,
+    0,
+  );
+
+  return [
+    {
+      label: "Highest-risk account",
+      value: String(highestRiskAccount?.risk ?? 0),
+      detail: highestRiskAccount?.name ?? "No accounts connected",
+      meta: `${highestRiskAccount?.findings ?? 0} findings tracked`,
+      tone: riskTone(highestRiskAccount?.risk ?? 0, 100),
+    },
+    {
+      label: "Top active finding",
+      value: (highestRiskFinding?.risk ?? 0).toFixed(1),
+      detail: highestRiskFinding?.title ?? "No active findings",
+      meta: highestRiskFinding
+        ? `${highestRiskFinding.severity} - ${highestRiskFinding.account}`
+        : "Waiting for scan data",
+      tone: riskTone(highestRiskFinding?.risk ?? 0, 10),
+    },
+    {
+      label: "Repeated signals",
+      value: String(repeatSignals),
+      detail: "Scanner observations",
+      meta: `${activeFindings.length} active findings`,
+      tone: repeatSignals > allFindings.length ? "warning" : "steady",
+    },
+  ];
+}
+
+function barWidth(severity: SeverityBreakdownRow) {
+  if (severity.count === 0) {
+    return 0;
+  }
+
+  return Math.max(severity.percent, 8);
+}
+
+function riskTone(score: number, maxScore: 10 | 100): RiskCard["tone"] {
+  const normalizedScore = maxScore === 100 ? score / 10 : score;
+
+  if (normalizedScore >= 8) {
+    return "danger";
+  }
+
+  if (normalizedScore >= 5.5) {
+    return "warning";
+  }
+
+  return "steady";
 }
 
 function filterFindings(
