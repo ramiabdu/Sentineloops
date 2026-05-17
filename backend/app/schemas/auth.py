@@ -38,7 +38,7 @@ class AuthSessionCreate(BaseModel):
 
 class AuthSignupCreate(BaseModel):
     email: str = Field(min_length=3, max_length=255)
-    display_name: str = Field(min_length=1, max_length=120)
+    display_name: str | None = Field(default=None, min_length=1, max_length=120)
     password: str = Field(min_length=8, max_length=128)
     role: str = Field(default="admin", min_length=1, max_length=50)
 
@@ -49,7 +49,9 @@ class AuthSignupCreate(BaseModel):
 
     @field_validator("display_name")
     @classmethod
-    def strip_display_name(cls, value: str) -> str:
+    def strip_display_name(cls, value: str | None) -> str | None:
+        if value is None:
+            return value
         return value.strip()
 
     @field_validator("password")

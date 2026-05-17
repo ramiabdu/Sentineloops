@@ -72,8 +72,10 @@ PORT=8000
 DATABASE_URL=postgresql+psycopg://USER:PASSWORD@HOST:PORT/DATABASE
 DATABASE_ECHO=false
 DATABASE_AUTO_MIGRATE=true
+DATABASE_CREATE_MISSING_TABLES=true
 REDIS_URL=redis://default:PASSWORD@HOST:PORT/0
 CORS_ALLOWED_ORIGINS=https://your-vercel-domain.vercel.app
+DEBUG_INIT_DB=false
 AUTH_SECRET_KEY=<generated-secret>
 AUTH_TOKEN_TTL_MINUTES=60
 AUTH_DEMO_EMAIL=analyst@sentinelops.local
@@ -136,6 +138,7 @@ The repository includes `render.yaml` for a free backend API preview on Render:
 - Cache/queue: Render Key Value
 - Health check: `/health`
 - Startup migrations: enabled with `DATABASE_AUTO_MIGRATE=true`
+- Missing-table safety net: enabled with `DATABASE_CREATE_MISSING_TABLES=true`
 
 Important limitations:
 
@@ -154,6 +157,33 @@ cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
 ```
 
 The repository also keeps a root-level `requirements.txt` because Render may fall back to `pip install -r requirements.txt` from the repository root when a service was created manually before the Blueprint was synced.
+
+Render-compatible manual migration command:
+
+```bash
+cd backend && alembic upgrade head
+```
+
+If Render Shell is unavailable, set these environment variables and redeploy the API:
+
+```text
+DATABASE_AUTO_MIGRATE=true
+DATABASE_CREATE_MISSING_TABLES=true
+```
+
+Temporary database initialization endpoint:
+
+1. Set `DEBUG_INIT_DB=true` or `ENVIRONMENT=production-debug`.
+2. Redeploy the API.
+3. Create a temporary admin bearer token from `POST /auth/session`.
+4. Call:
+
+```bash
+curl -X POST https://your-render-api.onrender.com/admin/init-db \
+  -H "Authorization: Bearer <token>"
+```
+
+5. Set `DEBUG_INIT_DB=false` or return `ENVIRONMENT=production` after the database is initialized.
 
 Manual deployment steps:
 

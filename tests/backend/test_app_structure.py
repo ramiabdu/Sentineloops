@@ -11,6 +11,7 @@ def test_application_factory_registers_core_routes():
     assert "/" in route_paths
     assert "/accounts" in route_paths
     assert "/accounts/{account_id}" in route_paths
+    assert "/admin/init-db" in route_paths
     assert "/auth/session" in route_paths
     assert "/auth/signup" in route_paths
     assert "/auth/login" in route_paths
@@ -44,3 +45,9 @@ def test_settings_auto_migrates_production_databases():
         .should_run_database_migrations
         is False
     )
+
+
+def test_settings_create_missing_tables_for_production_safety_net():
+    assert Settings(ENVIRONMENT="production").should_create_missing_database_tables is True
+    assert Settings(ENVIRONMENT="production-debug").is_debug_init_db_enabled is True
+    assert Settings(DEBUG_INIT_DB=True).is_debug_init_db_enabled is True

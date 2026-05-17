@@ -1,17 +1,21 @@
 from datetime import datetime, timedelta, timezone
+from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from app.api.routes import admin as admin_routes
 from app.core.auth import CurrentUser, create_session_token
 from app.db import get_db
 from app.main import create_application
 from app.models import Base
 from app.schemas.auth import AuthSignupCreate
+from app.services import users as user_service
 from app.services.users import UserAlreadyExistsError, register_user
 
 
@@ -68,6 +72,19 @@ def test_signup_creates_public_user():
     assert body["subject"] != "new.user@sentinelops.local"
 
 
+def test_signup_accepts_render_smoke_test_payload_without_display_name():
+    client = _build_database_client()
+
+    response = client.post(
+        "/auth/signup",
+        json={"email": "finaltest@example.com", "password": "12345678"},
+    )
+
+    assert response.status_code == 201
+    assert response.json()["email"] == "finaltest@example.com"
+    assert response.json()["display_name"] == "finaltest"
+
+
 def test_signup_rejects_duplicate_email():
     client = _build_database_client()
 
@@ -102,7 +119,7 @@ def test_signup_validation_errors_return_422():
     assert response.json()["code"] == "validation_error"
 
 
-def test_register_user_rolls_back_after_duplicate_flush_failure():
+def test_register_user_rolls_back_after_duplicate_precheck():
     session_factory = _build_session_factory()
 
     with session_factory() as session:
@@ -127,6 +144,106 @@ def test_register_user_rolls_back_after_duplicate_flush_failure():
         )
 
     assert second_user.email == "second.user@sentinelops.local"
+
+
+def test_register_user_rolls_back_after_integrity_failure(monkeypatch: pytest.MonkeyPatch):
+    session_factory = _build_session_factory()
+
+    with session_factory() as session:
+        register_user(session, AuthSignupCreate(**_signup_payload()))
+        monkeypatch.setattr(user_service, "get_user_by_email", lambda *_: None)
+
+        with pytest.raises(UserAlreadyExistsError):
+            register_user(
+                session,
+                AuthSignupCreate(
+                    **{**_signup_payload(), "email": "NEW.USER@SentinelOps.Local"}
+                ),
+            )
+
+        monkeypatch.undo()
+        second_user = register_user(
+            session,
+            AuthSignupCreate(
+                email="rollback.safe@sentinelops.local",
+                display_name="Rollback Safe",
+                password="correct-password-789",
+                role="analyst",
+            ),
+        )
+
+    assert second_user.email == "rollback.safe@sentinelops.local"
+
+
+def test_register_user_rolls_back_after_unexpected_database_failure(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    session_factory = _build_session_factory()
+
+    with session_factory() as session:
+        monkeypatch.setattr(user_service, "get_user_by_email", lambda *_: None)
+        monkeypatch.setattr(
+            session,
+            "commit",
+            lambda: (_ for _ in ()).throw(
+                IntegrityError("insert users", {}, Exception("duplicate email"))
+            ),
+        )
+
+        with pytest.raises(UserAlreadyExistsError):
+            register_user(session, AuthSignupCreate(**_signup_payload()))
+
+        assert not session.in_transaction()
+
+
+def test_admin_init_db_endpoint_is_hidden_when_disabled(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    monkeypatch.setattr(admin_routes.settings, "DEBUG_INIT_DB", False)
+    monkeypatch.setattr(admin_routes.settings, "ENVIRONMENT", "production")
+    client = TestClient(create_application())
+    token = client.post("/auth/session").json()["access_token"]
+
+    response = client.post(
+        "/admin/init-db",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 404
+    assert response.json()["code"] == "admin_init_db_disabled"
+
+
+def test_admin_init_db_endpoint_runs_when_debug_enabled(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    def fake_initialize_database(*, run_migrations: bool, create_missing_tables: bool):
+        assert run_migrations is True
+        assert create_missing_tables is True
+        return SimpleNamespace(
+            migrations_checked=True,
+            migrations_ran=True,
+            missing_tables_checked=True,
+            missing_tables_created=True,
+        )
+
+    monkeypatch.setattr(admin_routes.settings, "DEBUG_INIT_DB", True)
+    monkeypatch.setattr(admin_routes, "initialize_database", fake_initialize_database)
+    client = TestClient(create_application())
+    token = client.post("/auth/session").json()["access_token"]
+
+    response = client.post(
+        "/admin/init-db",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "status": "ok",
+        "migrations_checked": True,
+        "migrations_ran": True,
+        "missing_tables_checked": True,
+        "missing_tables_created": True,
+    }
 
 
 def test_login_returns_jwt_for_registered_user_and_auth_me_accepts_it():

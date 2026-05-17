@@ -16,6 +16,7 @@
 - Added a root-level `requirements.txt` for Render services that run the default Python build command from the repository root.
 - Added public user signup, password login, persisted users, and JWT bearer auth support.
 - Hardened database session rollback handling for signup/login and enabled production startup migrations.
+- Added Render-safe missing-table initialization and a temporary protected `/admin/init-db` endpoint for production debugging.
 
 ## v1.0.0
 

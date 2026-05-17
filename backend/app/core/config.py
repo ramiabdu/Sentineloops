@@ -13,8 +13,10 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+psycopg://sentinelops:sentinelops@localhost:5432/sentinelops"
     DATABASE_ECHO: bool = False
     DATABASE_AUTO_MIGRATE: bool = False
+    DATABASE_CREATE_MISSING_TABLES: bool = False
     REDIS_URL: str = "redis://localhost:6379/0"
     CORS_ALLOWED_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
+    DEBUG_INIT_DB: bool = False
     AUTH_SECRET_KEY: str = "sentinelops-local-dev-secret"
     AUTH_TOKEN_TTL_MINUTES: int = 60
     AUTH_DEMO_EMAIL: str = "analyst@sentinelops.local"
@@ -42,7 +44,22 @@ class Settings(BaseSettings):
 
     @property
     def should_run_database_migrations(self) -> bool:
-        return self.DATABASE_AUTO_MIGRATE or self.ENVIRONMENT.strip().lower() == "production"
+        return self.DATABASE_AUTO_MIGRATE or self.environment_name == "production"
+
+    @property
+    def should_create_missing_database_tables(self) -> bool:
+        return self.DATABASE_CREATE_MISSING_TABLES or self.environment_name in {
+            "production",
+            "production-debug",
+        }
+
+    @property
+    def is_debug_init_db_enabled(self) -> bool:
+        return self.DEBUG_INIT_DB or self.environment_name == "production-debug"
+
+    @property
+    def environment_name(self) -> str:
+        return self.ENVIRONMENT.strip().lower()
 
 
 settings = Settings()

@@ -52,6 +52,7 @@ def test_render_blueprint_uses_backend_python_commands():
     assert "buildCommand: cd backend && pip install -r requirements.txt" in render_text
     assert "preDeployCommand: cd backend && alembic upgrade head" in render_text
     assert "DATABASE_AUTO_MIGRATE" in render_text
+    assert "DATABASE_CREATE_MISSING_TABLES" in render_text
     assert 'value: "true"' in render_text
     assert (
         "startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
