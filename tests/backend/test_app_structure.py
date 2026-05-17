@@ -34,3 +34,13 @@ def test_settings_normalizes_hosted_postgres_urls():
     assert render_style.DATABASE_URL == "postgresql+psycopg://user:pass@host:5432/sentinelops"
     assert heroku_style.DATABASE_URL == "postgresql+psycopg://user:pass@host:5432/sentinelops"
     assert explicit_driver.DATABASE_URL == "postgresql+psycopg://user:pass@host:5432/sentinelops"
+
+
+def test_settings_auto_migrates_production_databases():
+    assert Settings(ENVIRONMENT="production").should_run_database_migrations is True
+    assert Settings(DATABASE_AUTO_MIGRATE=True).should_run_database_migrations is True
+    assert (
+        Settings(ENVIRONMENT="development", DATABASE_AUTO_MIGRATE=False)
+        .should_run_database_migrations
+        is False
+    )

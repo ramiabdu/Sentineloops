@@ -1,4 +1,4 @@
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.core.auth import hash_password, verify_password
@@ -16,9 +16,6 @@ class InvalidCredentialsError(Exception):
 
 
 def register_user(db: Session, payload: AuthSignupCreate) -> User:
-    if get_user_by_email(db, payload.email) is not None:
-        raise UserAlreadyExistsError()
-
     user = create_user(
         db,
         email=payload.email,
@@ -28,10 +25,14 @@ def register_user(db: Session, payload: AuthSignupCreate) -> User:
     )
 
     try:
+        db.flush()
         db.commit()
     except IntegrityError as exc:
         db.rollback()
         raise UserAlreadyExistsError from exc
+    except SQLAlchemyError:
+        db.rollback()
+        raise
 
     db.refresh(user)
     return user

@@ -71,6 +71,7 @@ DEBUG=false
 PORT=8000
 DATABASE_URL=postgresql+psycopg://USER:PASSWORD@HOST:PORT/DATABASE
 DATABASE_ECHO=false
+DATABASE_AUTO_MIGRATE=true
 REDIS_URL=redis://default:PASSWORD@HOST:PORT/0
 CORS_ALLOWED_ORIGINS=https://your-vercel-domain.vercel.app
 AUTH_SECRET_KEY=<generated-secret>
@@ -134,6 +135,7 @@ The repository includes `render.yaml` for a free backend API preview on Render:
 - Database: Render Postgres
 - Cache/queue: Render Key Value
 - Health check: `/health`
+- Startup migrations: enabled with `DATABASE_AUTO_MIGRATE=true`
 
 Important limitations:
 

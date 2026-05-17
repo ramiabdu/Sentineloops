@@ -15,6 +15,7 @@
 - Added `backend/requirements.txt` for Render's Python dependency installation.
 - Added a root-level `requirements.txt` for Render services that run the default Python build command from the repository root.
 - Added public user signup, password login, persisted users, and JWT bearer auth support.
+- Hardened database session rollback handling for signup/login and enabled production startup migrations.
 
 ## v1.0.0
 

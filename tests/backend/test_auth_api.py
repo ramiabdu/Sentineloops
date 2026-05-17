@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -10,6 +11,8 @@ from app.core.auth import CurrentUser, create_session_token
 from app.db import get_db
 from app.main import create_application
 from app.models import Base
+from app.schemas.auth import AuthSignupCreate
+from app.services.users import UserAlreadyExistsError, register_user
 
 
 def test_auth_session_returns_bearer_token_for_mock_user():
@@ -80,6 +83,50 @@ def test_signup_rejects_duplicate_email():
         "code": "user_already_exists",
         "message": "A user with this email already exists.",
     }
+
+
+def test_signup_validation_errors_return_422():
+    client = _build_database_client()
+
+    response = client.post(
+        "/auth/signup",
+        json={
+            "email": "not-an-email",
+            "display_name": "Invalid User",
+            "password": "short",
+            "role": "owner",
+        },
+    )
+
+    assert response.status_code == 422
+    assert response.json()["code"] == "validation_error"
+
+
+def test_register_user_rolls_back_after_duplicate_flush_failure():
+    session_factory = _build_session_factory()
+
+    with session_factory() as session:
+        register_user(session, AuthSignupCreate(**_signup_payload()))
+
+        with pytest.raises(UserAlreadyExistsError):
+            register_user(
+                session,
+                AuthSignupCreate(
+                    **{**_signup_payload(), "email": "NEW.USER@SentinelOps.Local"}
+                ),
+            )
+
+        second_user = register_user(
+            session,
+            AuthSignupCreate(
+                email="second.user@sentinelops.local",
+                display_name="Second User",
+                password="correct-password-456",
+                role="analyst",
+            ),
+        )
+
+    assert second_user.email == "second.user@sentinelops.local"
 
 
 def test_login_returns_jwt_for_registered_user_and_auth_me_accepts_it():
@@ -236,21 +283,31 @@ def test_viewer_cannot_trigger_scan():
 
 
 def _build_database_client() -> TestClient:
+    session_factory = _build_session_factory()
+    app = create_application()
+
+    def override_get_db():
+        session = session_factory()
+        try:
+            yield session
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+
+    app.dependency_overrides[get_db] = override_get_db
+    return TestClient(app)
+
+
+def _build_session_factory():
     engine = create_engine(
         "sqlite+pysqlite:///:memory:",
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
     )
     Base.metadata.create_all(engine)
-    session_factory = sessionmaker(bind=engine, expire_on_commit=False)
-    app = create_application()
-
-    def override_get_db():
-        with session_factory() as session:
-            yield session
-
-    app.dependency_overrides[get_db] = override_get_db
-    return TestClient(app)
+    return sessionmaker(bind=engine, expire_on_commit=False)
 
 
 def _auth_headers(client: TestClient, *, role: str) -> dict[str, str]:
