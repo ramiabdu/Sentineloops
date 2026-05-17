@@ -52,6 +52,82 @@ def test_auth_session_rejects_unknown_role():
     assert response.status_code == 422
 
 
+def test_signup_creates_public_user():
+    client = _build_database_client()
+
+    response = client.post("/auth/signup", json=_signup_payload())
+
+    assert response.status_code == 201
+    body = response.json()
+    assert body["email"] == "new.user@sentinelops.local"
+    assert body["display_name"] == "New User"
+    assert body["role"] == "admin"
+    assert body["subject"] != "new.user@sentinelops.local"
+
+
+def test_signup_rejects_duplicate_email():
+    client = _build_database_client()
+
+    first_response = client.post("/auth/signup", json=_signup_payload())
+    duplicate_response = client.post(
+        "/auth/signup",
+        json={**_signup_payload(), "email": "NEW.USER@SentinelOps.Local"},
+    )
+
+    assert first_response.status_code == 201
+    assert duplicate_response.status_code == 409
+    assert duplicate_response.json() == {
+        "code": "user_already_exists",
+        "message": "A user with this email already exists.",
+    }
+
+
+def test_login_returns_jwt_for_registered_user_and_auth_me_accepts_it():
+    client = _build_database_client()
+    client.post("/auth/signup", json=_signup_payload())
+
+    login_response = client.post(
+        "/auth/login",
+        json={
+            "email": "NEW.USER@SentinelOps.Local",
+            "password": "correct-password-123",
+        },
+    )
+
+    assert login_response.status_code == 200
+    body = login_response.json()
+    assert body["token_type"] == "bearer"
+    assert body["access_token"].count(".") == 2
+    assert body["user"]["email"] == "new.user@sentinelops.local"
+
+    me_response = client.get(
+        "/auth/me",
+        headers={"Authorization": f"Bearer {body['access_token']}"},
+    )
+
+    assert me_response.status_code == 200
+    assert me_response.json() == body["user"]
+
+
+def test_login_rejects_invalid_password():
+    client = _build_database_client()
+    client.post("/auth/signup", json=_signup_payload())
+
+    response = client.post(
+        "/auth/login",
+        json={
+            "email": "new.user@sentinelops.local",
+            "password": "wrong-password",
+        },
+    )
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "code": "authentication_failed",
+        "message": "Invalid email or password.",
+    }
+
+
 def test_auth_me_returns_current_user_from_bearer_token():
     client = TestClient(create_application())
     session_response = client.post("/auth/session")
@@ -196,6 +272,15 @@ def _account_payload() -> dict[str, str]:
         "name": "AWS production",
         "cloud_provider": "aws",
         "external_id": "123456789012",
+    }
+
+
+def _signup_payload() -> dict[str, str]:
+    return {
+        "email": "new.user@sentinelops.local",
+        "display_name": "New User",
+        "password": "correct-password-123",
+        "role": "admin",
     }
 
 

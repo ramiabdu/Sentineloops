@@ -11,6 +11,7 @@ def test_alembic_files_exist():
         root / "backend" / "alembic" / "versions" / "20260424_0001_create_core_tables.py",
         root / "backend" / "alembic" / "versions" / "20260512_0002_add_finding_dedup_constraint.py",
         root / "backend" / "alembic" / "versions" / "20260513_0003_add_finding_dedup_tracking.py",
+        root / "backend" / "alembic" / "versions" / "20260517_0004_create_users.py",
         root / "backend" / "app" / "db" / "session.py",
     ]
 

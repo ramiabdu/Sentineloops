@@ -7,6 +7,7 @@ from app.models import (
     FindingStatus,
     Scan,
     ScanStatus,
+    User,
 )
 
 
@@ -14,6 +15,7 @@ def test_expected_table_names():
     assert Account.__tablename__ == "accounts"
     assert Scan.__tablename__ == "scans"
     assert Finding.__tablename__ == "findings"
+    assert User.__tablename__ == "users"
 
 
 def test_account_unique_constraint_covers_provider_and_external_id():
@@ -40,6 +42,12 @@ def test_relationship_foreign_keys_exist():
     assert Scan.__table__.c.account_id.foreign_keys
     assert Finding.__table__.c.account_id.foreign_keys
     assert Finding.__table__.c.scan_id.foreign_keys
+
+
+def test_user_auth_columns_exist():
+    assert User.__table__.c.email.unique is True
+    assert User.__table__.c.password_hash.nullable is False
+    assert User.__table__.c.role.index is True
 
 
 def test_finding_dedup_tracking_columns_exist():

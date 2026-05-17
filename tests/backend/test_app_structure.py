@@ -12,6 +12,8 @@ def test_application_factory_registers_core_routes():
     assert "/accounts" in route_paths
     assert "/accounts/{account_id}" in route_paths
     assert "/auth/session" in route_paths
+    assert "/auth/signup" in route_paths
+    assert "/auth/login" in route_paths
     assert "/auth/me" in route_paths
     assert "/health" in route_paths
     assert app.title == settings.APP_NAME

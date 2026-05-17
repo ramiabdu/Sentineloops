@@ -65,7 +65,7 @@ flowchart LR
 - Risk scoring for scanner findings
 - Queued scan lifecycle and worker execution loop
 - Findings list/detail APIs with filters
-- Mock bearer sessions and RBAC route checks
+- Public signup, password login, JWT bearer sessions, and RBAC route checks
 - Responsive dashboard with posture metrics, findings table, severity charts, risk cards, account inventory, and scan activity
 - GitHub Actions CI for backend tests/lint and frontend typecheck/build
 - Docker local stack with API, worker, PostgreSQL, and Redis
@@ -221,7 +221,7 @@ Deployment configuration is prepared for:
 - Set `DEBUG=false` in production.
 - Restrict `CORS_ALLOWED_ORIGINS` to the deployed frontend URL.
 - Use least-privilege cloud credentials for scanner integrations.
-- Treat the current bearer auth as an MVP foundation, not a complete identity provider.
+- Treat the current signup/login flow as an MVP foundation, not a complete identity provider.
 
 See [SECURITY.md](SECURITY.md) and [docs/threat-model.md](docs/threat-model.md).
 

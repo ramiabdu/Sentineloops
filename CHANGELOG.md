@@ -14,6 +14,7 @@
 - Switched the Render backend blueprint to the Python runtime with explicit backend build and start commands.
 - Added `backend/requirements.txt` for Render's Python dependency installation.
 - Added a root-level `requirements.txt` for Render services that run the default Python build command from the repository root.
+- Added public user signup, password login, persisted users, and JWT bearer auth support.
 
 ## v1.0.0
 

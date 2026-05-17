@@ -25,4 +25,4 @@ For now, contact the repository owner directly through GitHub. Include:
 
 ## Current Auth Scope
 
-SentinelOps currently uses mock bearer sessions and route-level RBAC for the MVP. Production identity should be replaced with a real identity provider before handling sensitive customer data.
+SentinelOps currently uses public signup, password login, JWT bearer sessions, and route-level RBAC for the MVP. Production identity should be replaced with a real identity provider before handling sensitive customer data.

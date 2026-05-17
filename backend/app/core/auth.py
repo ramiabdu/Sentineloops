@@ -5,11 +5,13 @@ import binascii
 import hashlib
 import hmac
 import json
+import secrets
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Any
 
-from fastapi import Depends, Header
+from fastapi import Depends
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from app.core.config import settings
 from app.core.errors import AuthenticationError, AuthorizationError
@@ -23,6 +25,10 @@ SUPPORTED_ROLES: tuple[Role, ...] = (ROLE_ADMIN, ROLE_ANALYST, ROLE_VIEWER)
 READ_ROLES: tuple[Role, ...] = SUPPORTED_ROLES
 SCAN_WRITE_ROLES: tuple[Role, ...] = (ROLE_ADMIN, ROLE_ANALYST)
 ACCOUNT_WRITE_ROLES: tuple[Role, ...] = (ROLE_ADMIN,)
+PASSWORD_HASH_ALGORITHM = "pbkdf2_sha256"
+PASSWORD_HASH_ITERATIONS = 260_000
+
+bearer_scheme = HTTPBearer(auto_error=False)
 
 
 @dataclass(frozen=True)
@@ -87,16 +93,54 @@ def decode_session_token(token: str, *, now: datetime | None = None) -> CurrentU
 
 
 def get_current_user(
-    authorization: Annotated[str | None, Header()] = None,
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_scheme)] = None,
 ) -> CurrentUser:
-    if authorization is None:
+    if credentials is None:
         raise AuthenticationError()
 
-    scheme, _, token = authorization.partition(" ")
-    if scheme.lower() != "bearer" or not token.strip():
+    if credentials.scheme.lower() != "bearer" or not credentials.credentials.strip():
         raise AuthenticationError()
 
-    return decode_session_token(token.strip())
+    return decode_session_token(credentials.credentials.strip())
+
+
+def hash_password(password: str) -> str:
+    salt = secrets.token_bytes(16)
+    digest = hashlib.pbkdf2_hmac(
+        "sha256",
+        password.encode(),
+        salt,
+        PASSWORD_HASH_ITERATIONS,
+    )
+    return "$".join(
+        (
+            PASSWORD_HASH_ALGORITHM,
+            str(PASSWORD_HASH_ITERATIONS),
+            _base64url_encode(salt),
+            _base64url_encode(digest),
+        )
+    )
+
+
+def verify_password(password: str, password_hash: str) -> bool:
+    try:
+        algorithm, iterations_text, encoded_salt, encoded_digest = password_hash.split("$")
+        iterations = int(iterations_text)
+        salt = _base64url_decode(encoded_salt)
+        expected_digest = _base64url_decode(encoded_digest)
+    except (ValueError, binascii.Error):
+        return False
+
+    if algorithm != PASSWORD_HASH_ALGORITHM or iterations < PASSWORD_HASH_ITERATIONS:
+        return False
+
+    actual_digest = hashlib.pbkdf2_hmac(
+        "sha256",
+        password.encode(),
+        salt,
+        iterations,
+    )
+    return hmac.compare_digest(actual_digest, expected_digest)
 
 
 def require_roles(*allowed_roles: Role):
