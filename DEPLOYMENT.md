@@ -145,10 +145,13 @@ Important limitations:
 Render backend commands:
 
 ```bash
+pip install -r requirements.txt
 cd backend && pip install -r requirements.txt
 cd backend && alembic upgrade head
 cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
 ```
+
+The repository also keeps a root-level `requirements.txt` because Render may fall back to `pip install -r requirements.txt` from the repository root when a service was created manually before the Blueprint was synced.
 
 Manual deployment steps:
 

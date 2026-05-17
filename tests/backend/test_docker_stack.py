@@ -60,7 +60,8 @@ def test_render_blueprint_uses_backend_python_commands():
 
 def test_backend_requirements_matches_runtime_dependencies():
     root = Path(__file__).resolve().parents[2]
-    requirements_text = (root / "backend" / "requirements.txt").read_text()
+    root_requirements_text = (root / "requirements.txt").read_text()
+    backend_requirements_text = (root / "backend" / "requirements.txt").read_text()
 
     for dependency in [
         "alembic",
@@ -70,4 +71,5 @@ def test_backend_requirements_matches_runtime_dependencies():
         "sqlalchemy",
         "uvicorn[standard]",
     ]:
-        assert dependency in requirements_text
+        assert dependency in root_requirements_text
+        assert dependency in backend_requirements_text

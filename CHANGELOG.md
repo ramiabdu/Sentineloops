@@ -13,6 +13,7 @@
 - Normalized hosted Postgres URLs for production providers that expose `postgresql://` or `postgres://` connection strings.
 - Switched the Render backend blueprint to the Python runtime with explicit backend build and start commands.
 - Added `backend/requirements.txt` for Render's Python dependency installation.
+- Added a root-level `requirements.txt` for Render services that run the default Python build command from the repository root.
 
 ## v1.0.0
 
