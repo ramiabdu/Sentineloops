@@ -1,5 +1,6 @@
 .env
 backend/.env
+frontend/.env
 .git
 .gitignore
 __pycache__/

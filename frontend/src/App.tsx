@@ -1,5 +1,7 @@
 import { useMemo, useState, type FormEvent } from "react";
 
+import { API_BASE_URL } from "./config";
+
 type DashboardView = "overview" | "accounts" | "findings";
 
 type MetricCard = {
@@ -266,7 +268,7 @@ export function App() {
   }
 
   return (
-    <main className="app-shell">
+    <main className="app-shell" data-api-base-url={API_BASE_URL}>
       <aside className="sidebar">
         <div className="brand-block">
           <span className="brand-mark" aria-hidden="true">

@@ -7,45 +7,23 @@
 ![React](https://img.shields.io/badge/React-19-61dafb)
 ![License](https://img.shields.io/badge/license-MIT-17372e)
 
-SentinelOps is a production-style **Cloud Security Posture Management (CSPM)** MVP designed to detect, prioritize, and manage cloud security misconfigurations across multiple cloud accounts.
+SentinelOps is a production-style Cloud Security Posture Management (CSPM) platform for detecting, analyzing, and prioritizing cloud security misconfigurations across cloud accounts.
 
-This repository is intentionally structured as a **monorepo** so backend, frontend, workers, infrastructure, and documentation evolve together.
+It is built as a full-stack portfolio project with a FastAPI backend, scanner plugin architecture, PostgreSQL persistence, queued worker execution, responsive React dashboard, auth/RBAC foundation, Docker local runtime, CI, release assets, and deployment-ready configuration.
 
-## At A Glance
+## Live Demo
 
-- **Backend:** FastAPI, SQLAlchemy, Alembic, PostgreSQL, Redis-ready worker runtime
-- **Frontend:** React, TypeScript, Vite, responsive security dashboard
-- **Security workflow:** auth/RBAC, scanner plugins, risk scoring, deduplication, scan status tracking
-- **Quality:** 88 backend tests, frontend typecheck/build, GitHub Actions CI
-- **Release:** `v1.0.0` with screenshots, demo GIF, and release notes
+Public demo: Not deployed yet.
 
-## Why this project exists
+Deployment-ready; public demo coming soon. See [DEPLOYMENT.md](DEPLOYMENT.md) for the exact Railway and Vercel setup.
 
-The goal is to build a serious portfolio grade system that demonstrates:
-- clean architecture
-- security minded backend design
-- scalable scanner/plugin foundations
-- observable async workflows
-- infrastructure awareness
-- strong documentation and developer ownership
+## Deployment Status
 
-The project scope and 30 day roadmap are based on the supplied SentinelOps specification.
+No real public deployment is currently configured for this repository.
 
-## Current foundation state
+The repository contains Docker, Railway, and Vercel configuration so the app can be deployed, but there is no public production URL in the README, GitHub repo metadata, Vercel config, Railway config, or package metadata at this time.
 
-The current implementation establishes the platform baseline:
-- monorepo initialized and documented
-- FastAPI application factory and routed API structure
-- SQLAlchemy models for accounts, scans, and findings
-- Alembic bootstrap and initial schema migration
-- local Docker Compose stack for API, PostgreSQL, and Redis
-- frontend dashboard skeleton created with posture, findings table, account, scan, and onboarding flows
-- mock bearer authentication and role checks added for protected API routes
-- GitHub Actions CI added for backend tests/lint and frontend typecheck/build
-- architecture and decision docs updated to match the codebase
-- final demo screenshots and release notes prepared for `v1.0.0`
-
-## Demo
+## Screenshots
 
 ![SentinelOps demo](docs/assets/sentinelops-demo.gif)
 
@@ -59,167 +37,205 @@ Mobile layout:
 
 ## Architecture
 
-```text
-sentinelops/
-├── backend/            # FastAPI app, domain services, repositories, scanners
-├── frontend/           # Dashboard UI
-├── workers/            # Async scan/background job workers
-├── docker/             # Local development orchestration
-├── terraform/          # Infrastructure modules
-├── docs/               # Architecture, decisions, roadmap, threat model
-├── tests/              # Backend/frontend/integration tests
-└── .github/workflows/  # CI pipelines
+```mermaid
+flowchart LR
+    User["Security operator"] --> Frontend["React dashboard on Vercel"]
+    Frontend --> API["FastAPI backend on Railway"]
+    API --> Postgres["Railway PostgreSQL"]
+    API --> Redis["Railway Redis"]
+    Worker["Railway worker service"] --> Redis
+    Worker --> Postgres
+    Worker --> ScannerEngine["Scanner plugin runner"]
+    ScannerEngine --> AWS["AWS account APIs"]
+    ScannerEngine --> Findings["Normalized findings"]
+    Findings --> Postgres
 ```
+
+## Features
+
+- Cloud account onboarding API and dashboard flow
+- Scanner plugin contracts, registry, and runner
+- AWS public S3 bucket scanner
+- AWS public security group ingress scanner
+- AWS IAM user without MFA scanner
+- Findings persistence with deduplication
+- First seen, last seen, and occurrence tracking
+- Risk scoring for scanner findings
+- Queued scan lifecycle and worker execution loop
+- Findings list/detail APIs with filters
+- Mock bearer sessions and RBAC route checks
+- Responsive dashboard with posture metrics, findings table, severity charts, risk cards, account inventory, and scan activity
+- GitHub Actions CI for backend tests/lint and frontend typecheck/build
+- Docker local stack with API, worker, PostgreSQL, and Redis
 
 ## Tech Stack
 
-### Backend
-- Python 3.12+
+Backend:
+
+- Python 3.12
 - FastAPI
-- SQLAlchemy / Alembic
-- Pydantic settings
+- SQLAlchemy
+- Alembic
 - PostgreSQL
-- Redis
-- Celery or RQ (planned)
+- Redis-ready worker runtime
+- Pydantic settings
+- Uvicorn
 
-### Frontend
-- React + TypeScript + Vite
-- Dashboard oriented component layout
+Frontend:
 
-### Infrastructure
-- Docker Compose for local development
-- Terraform modules for baseline cloud resources
-- GitHub Actions for CI
+- React 19
+- TypeScript
+- Vite
+- CSS dashboard UI
 
-## Repository structure
+Infrastructure and quality:
+
+- Docker and Docker Compose
+- Railway-ready backend and worker commands
+- Vercel-ready frontend config
+- Terraform baseline modules
+- GitHub Actions CI
+- Pytest and Ruff
+
+## Repository Structure
 
 ```text
-sentinelops/
-├── .github/workflows/
-├── backend/
-│   ├── app/
-│   │   ├── api/
-│   │   ├── core/
-│   │   ├── models/
-│   │   ├── repositories/
-│   │   ├── scanners/
-│   │   ├── schemas/
-│   │   └── services/
-├── docker/
-├── docs/
-├── frontend/
-├── scripts/
-├── terraform/
-│   └── modules/
-├── tests/
-└── workers/
+.
+|-- backend/            # FastAPI app, models, repositories, services, scanners
+|-- frontend/           # React/Vite dashboard
+|-- workers/            # queued scan worker runtime
+|-- docker/             # local compose stack
+|-- terraform/          # baseline infrastructure modules
+|-- docs/               # architecture, decisions, release notes, threat model
+|-- tests/              # backend tests
+|-- .github/            # CI and contribution templates
+|-- DEPLOYMENT.md
+|-- SECURITY.md
+|-- CONTRIBUTING.md
+|-- ROADMAP.md
+`-- CHANGELOG.md
 ```
 
-## Quick start
+## Local Setup
 
-### 1) Bootstrap environment
+Bootstrap environment:
 
 ```bash
 cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
 ```
 
-### 2) Review docs
+Run the backend locally:
 
-Start with:
-- `docs/architecture.md`
-- `docs/threat-model.md`
-- `docs/decisions.md`
-- `docs/roadmap.md`
+```bash
+cd backend
+python -m pip install -e ".[dev]"
+alembic upgrade head
+python -m uvicorn app.main:app --reload
+```
 
-### 3) Local development stack
+Run the frontend locally:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Run the worker locally:
+
+```bash
+PYTHONPATH=backend python -m workers.app.main
+```
+
+## Docker Setup
+
+Start the full local stack:
 
 ```bash
 make bootstrap
-make tree
 make up
 ```
 
-Dockerized local runtime starts the backend API with PostgreSQL and Redis.
+Services:
 
-### 4) Local verification
+- API: `http://localhost:8000`
+- Health check: `http://localhost:8000/health`
+- PostgreSQL: `localhost:5432`
+- Redis: `localhost:6379`
+
+Stop the stack:
+
+```bash
+make down
+```
+
+## Testing
+
+Backend:
 
 ```bash
 cd backend
 python -m pytest ../tests/backend
 python -m ruff check app ../tests/backend
+```
 
-cd ../frontend
+Frontend:
+
+```bash
+cd frontend
 npm run test
 npm run build
 ```
 
-## MVP scope from specification
+## CI/CD
 
-The target MVP includes multi account onboarding, a security scanning engine, findings persistence, risk scoring, REST APIs, background workers, dashboard UI, auth/RBAC, alerts, audit logs, CI/CD, local Docker, Terraform, and professional documentation.
+GitHub Actions runs on pushes and pull requests targeting `main`:
 
-Implemented scanners:
-- public S3 buckets
-- open security groups (`0.0.0.0/0`)
-- IAM users without MFA
+- backend dependency installation
+- backend Ruff lint
+- backend Pytest suite
+- frontend TypeScript check
+- frontend production build
 
-Planned next scanners:
-- old access keys
-- missing storage encryption
+Deployment configuration is prepared for:
 
-The scanner layer now exposes typed plugin contracts, a registry, and a runner. Concrete AWS scanners detect public S3 bucket exposure, public security group ingress, and IAM console users without MFA. Scanner findings can be persisted with deduplication, first/last seen tracking, occurrence counts, account and scan linkage, automatic risk scores, read APIs, queued scan APIs, scan status summaries, and a worker execution model that processes scans into completed or failed states. The API now issues mock bearer session tokens, protects core account, finding, and scan routes, and enforces role checks for write actions. The frontend now has a responsive dashboard skeleton for posture metrics, priority findings, a filterable findings table, finding details, severity charts, risk cards, account inventory, scan activity, and account onboarding.
+- Frontend: Vercel
+- Backend API: Railway
+- PostgreSQL: Railway Postgres
+- Redis: Railway Redis
+- Worker: Railway service
 
-## Development roadmap
+## Security Notes
 
-The full 30 day plan progresses from repo setup, backend foundations, database/migrations, scanners, persistence, async jobs, frontend dashboard, auth/RBAC, CI, and release polish.
+- Do not commit `.env` files or cloud credentials.
+- Replace `AUTH_SECRET_KEY` in every non-local environment.
+- Set `DEBUG=false` in production.
+- Restrict `CORS_ALLOWED_ORIGINS` to the deployed frontend URL.
+- Use least-privilege cloud credentials for scanner integrations.
+- Treat the current bearer auth as an MVP foundation, not a complete identity provider.
 
-## Definition of done
+See [SECURITY.md](SECURITY.md) and [docs/threat-model.md](docs/threat-model.md).
 
-The repository aims to satisfy the provided definition of done:
-- local run path
-- usable dashboard
-- documented API
-- working scanners
-- persisted findings
-- visible risk score
-- passing tests and CI
-- professional docs
+## Roadmap
 
-## Next implementation milestones
+Near-term:
 
-1. Persistent users and real identity provider integration
-2. Additional scanners for old access keys and storage encryption
-3. Production deployment wiring and alert delivery
+- Deploy public demo on Railway and Vercel
+- Add real identity provider integration
+- Add old access key and missing encryption scanners
+- Add audit log persistence
+- Add alert delivery for high-severity findings
 
-## Current endpoints
+See [ROADMAP.md](ROADMAP.md).
 
-- `/`
-- `/health`
-- `POST /auth/session`
-- `GET /auth/me`
-- `GET /accounts`
-- `POST /accounts`
-- `GET /accounts/{account_id}`
-- `GET /findings`
-- `GET /findings/{finding_id}`
-- `GET /scans`
-- `POST /scans`
-- `GET /scans/{scan_id}`
-- `GET /scans/{scan_id}/status`
+## Contributing
 
-## Runtime behavior
-
-Application logs startup metadata including environment and debug mode.
-API errors use stable JSON payloads with `code` and `message` fields. Validation failures also include a `details` list for invalid request fields.
-Account, finding, and scan routes require a bearer token from `/auth/session`.
-RBAC roles are `viewer` for read-only access, `analyst` for read and scan trigger access, and `admin` for account onboarding plus scan trigger access.
-
-## CI
-
-GitHub Actions runs backend lint/tests and frontend typecheck/build on pushes and pull requests targeting `main`.
+Contributions should be small, tested, and aligned with the security product scope. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Release
 
-The [`v1.0.0`](https://github.com/ramiabdu/Sentineloops/tree/v1.0.0) release package is summarized in `docs/release-v1.0.0.md`.
+The [`v1.0.0`](https://github.com/ramiabdu/Sentineloops/tree/v1.0.0) release package is summarized in [docs/release-v1.0.0.md](docs/release-v1.0.0.md).
 
 ## License
 

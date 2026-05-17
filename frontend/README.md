@@ -2,6 +2,8 @@
 
 Dashboard UI for SentinelOps.
 
+Configuration is read from `VITE_API_BASE_URL`. Copy `.env.example` to `.env` for local development.
+
 ## Available scripts
 
 - `npm run dev` starts the Vite development server.

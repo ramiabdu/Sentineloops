@@ -30,3 +30,5 @@ Once the stack is running:
 - Health: `http://localhost:8000/health`
 - PostgreSQL: `localhost:5432`
 - Redis: `localhost:6379`
+
+For production deployment notes, see `../DEPLOYMENT.md`.

@@ -1,12 +1,14 @@
 PROJECT_NAME=sentinelops
 
-.PHONY: help tree bootstrap run-backend db-bootstrap db-current fmt lint test up logs down
+.PHONY: help tree bootstrap run-backend run-backend-prod run-worker db-bootstrap db-current fmt lint test up logs down
 
 help:
 	@echo "Available targets:"
 	@echo "  make tree       - show repo structure"
 	@echo "  make bootstrap  - copy backend/.env.example to backend/.env if missing"
 	@echo "  make run-backend - start backend API locally"
+	@echo "  make run-backend-prod - start backend API with production-style command"
+	@echo "  make run-worker - start queued scan worker locally"
 	@echo "  make db-bootstrap - apply all Alembic migrations"
 	@echo "  make db-current  - show current Alembic revision"
 	@echo "  make fmt        - format backend code"
@@ -21,10 +23,17 @@ tree:
 
 bootstrap:
 	@test -f backend/.env || cp backend/.env.example backend/.env
+	@test -f frontend/.env || cp frontend/.env.example frontend/.env
 	@echo "Environment bootstrapped."
 
 run-backend:
 	cd backend && python -m uvicorn app.main:app --reload
+
+run-backend-prod:
+	cd backend && alembic upgrade head && python -m uvicorn app.main:app --host 0.0.0.0 --port $${PORT:-8000}
+
+run-worker:
+	PYTHONPATH=backend python -m workers.app.main
 
 db-bootstrap:
 	cd backend && alembic upgrade head
