@@ -9,10 +9,20 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Any
 
-from fastapi import Header
+from fastapi import Depends, Header
 
 from app.core.config import settings
-from app.core.errors import AuthenticationError
+from app.core.errors import AuthenticationError, AuthorizationError
+
+Role = str
+
+ROLE_ADMIN: Role = "admin"
+ROLE_ANALYST: Role = "analyst"
+ROLE_VIEWER: Role = "viewer"
+SUPPORTED_ROLES: tuple[Role, ...] = (ROLE_ADMIN, ROLE_ANALYST, ROLE_VIEWER)
+READ_ROLES: tuple[Role, ...] = SUPPORTED_ROLES
+SCAN_WRITE_ROLES: tuple[Role, ...] = (ROLE_ADMIN, ROLE_ANALYST)
+ACCOUNT_WRITE_ROLES: tuple[Role, ...] = (ROLE_ADMIN,)
 
 
 @dataclass(frozen=True)
@@ -72,7 +82,7 @@ def decode_session_token(token: str, *, now: datetime | None = None) -> CurrentU
         subject=_require_text(payload, "sub"),
         email=_require_text(payload, "email"),
         display_name=_require_text(payload, "name"),
-        role=_require_text(payload, "role"),
+        role=_require_role(payload, "role"),
     )
 
 
@@ -87,6 +97,20 @@ def get_current_user(
         raise AuthenticationError()
 
     return decode_session_token(token.strip())
+
+
+def require_roles(*allowed_roles: Role):
+    allowed_role_set = set(allowed_roles)
+
+    def require_role(
+        current_user: CurrentUser = Depends(get_current_user),
+    ) -> CurrentUser:
+        if current_user.role not in allowed_role_set:
+            raise AuthorizationError()
+
+        return current_user
+
+    return require_role
 
 
 def _encode_json(payload: dict[str, Any]) -> str:
@@ -130,6 +154,14 @@ def _require_text(payload: dict[str, Any], key: str) -> str:
     if not isinstance(value, str) or value.strip() == "":
         raise AuthenticationError()
     return value
+
+
+def _require_role(payload: dict[str, Any], key: str) -> Role:
+    role = _require_text(payload, key).lower()
+    if role not in SUPPORTED_ROLES:
+        raise AuthorizationError()
+
+    return role
 
 
 def _require_int(payload: dict[str, Any], key: str) -> int:

@@ -3,6 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 
+from app.core.auth import SCAN_WRITE_ROLES, require_roles
 from app.core.errors import NotFoundError
 from app.db import get_db
 from app.models.scan import ScanStatus
@@ -18,7 +19,12 @@ from app.services.scans import (
 router = APIRouter(prefix="/scans", tags=["scans"])
 
 
-@router.post("", response_model=ScanResponse, status_code=status.HTTP_202_ACCEPTED)
+@router.post(
+    "",
+    dependencies=[Depends(require_roles(*SCAN_WRITE_ROLES))],
+    response_model=ScanResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
 def create_scan(payload: ScanCreate, db: Session = Depends(get_db)) -> ScanResponse:
     try:
         scan = trigger_scan(db, payload)

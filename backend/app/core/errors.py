@@ -28,3 +28,9 @@ class AuthenticationError(AppError):
     status_code = status.HTTP_401_UNAUTHORIZED
     code = "authentication_failed"
     message = "Valid bearer authentication is required."
+
+
+class AuthorizationError(AppError):
+    status_code = status.HTTP_403_FORBIDDEN
+    code = "authorization_failed"
+    message = "User role is not allowed to perform this action."

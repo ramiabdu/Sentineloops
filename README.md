@@ -25,7 +25,7 @@ The current implementation establishes the platform baseline:
 - Alembic bootstrap and initial schema migration
 - local Docker Compose stack for API, PostgreSQL, and Redis
 - frontend dashboard skeleton created with posture, findings table, account, scan, and onboarding flows
-- mock bearer authentication added for protected API routes
+- mock bearer authentication and role checks added for protected API routes
 - architecture and decision docs updated to match the codebase
 
 ## Planned architecture
@@ -124,7 +124,7 @@ Required scanners include:
 - old access keys
 - missing storage encryption
 
-The scanner layer now exposes typed plugin contracts, a registry, and a runner. Concrete AWS scanners detect public S3 bucket exposure, public security group ingress, and IAM console users without MFA. Scanner findings can be persisted with deduplication, first/last seen tracking, occurrence counts, account and scan linkage, automatic risk scores, read APIs, queued scan APIs, scan status summaries, and a worker execution model that processes scans into completed or failed states. The API now issues mock bearer session tokens and protects core account, finding, and scan routes. The frontend now has a responsive dashboard skeleton for posture metrics, priority findings, a filterable findings table, finding details, severity charts, risk cards, account inventory, scan activity, and account onboarding.
+The scanner layer now exposes typed plugin contracts, a registry, and a runner. Concrete AWS scanners detect public S3 bucket exposure, public security group ingress, and IAM console users without MFA. Scanner findings can be persisted with deduplication, first/last seen tracking, occurrence counts, account and scan linkage, automatic risk scores, read APIs, queued scan APIs, scan status summaries, and a worker execution model that processes scans into completed or failed states. The API now issues mock bearer session tokens, protects core account, finding, and scan routes, and enforces role checks for write actions. The frontend now has a responsive dashboard skeleton for posture metrics, priority findings, a filterable findings table, finding details, severity charts, risk cards, account inventory, scan activity, and account onboarding.
 
 ## Development roadmap
 
@@ -169,3 +169,4 @@ MIT
 Application logs startup metadata including environment and debug mode.
 API errors use stable JSON payloads with `code` and `message` fields. Validation failures also include a `details` list for invalid request fields.
 Account, finding, and scan routes require a bearer token from `/auth/session`.
+RBAC roles are `viewer` for read-only access, `analyst` for read and scan trigger access, and `admin` for account onboarding plus scan trigger access.

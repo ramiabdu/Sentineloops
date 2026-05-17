@@ -2,6 +2,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
+from app.core.auth import SUPPORTED_ROLES
+
 
 class AuthSessionCreate(BaseModel):
     email: str = Field(
@@ -20,10 +22,18 @@ class AuthSessionCreate(BaseModel):
             raise ValueError("email must be a valid address")
         return normalized_value
 
-    @field_validator("display_name", "role")
+    @field_validator("display_name")
     @classmethod
     def strip_text(cls, value: str) -> str:
         return value.strip()
+
+    @field_validator("role")
+    @classmethod
+    def validate_role(cls, value: str) -> str:
+        role = value.strip().lower()
+        if role not in SUPPORTED_ROLES:
+            raise ValueError("role must be one of admin, analyst, or viewer")
+        return role
 
 
 class AuthUserResponse(BaseModel):
