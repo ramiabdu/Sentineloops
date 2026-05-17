@@ -2,17 +2,32 @@
 
 ## Current Deployment Status
 
-Public demo: Not deployed yet.
+Public frontend demo: `https://ramiabdu.github.io/Sentineloops/`
 
-As of 2026-05-17, this repository is deployment-ready but does not have a verified public production URL. No real Vercel, Railway, Render, Fly.io, AWS, or other public deployment link is configured in the repository metadata or project files.
+Backend API: Not deployed yet.
+
+As of 2026-05-17, this repository has a free GitHub Pages workflow for the static frontend demo. The backend API, PostgreSQL, Redis, and worker are deployment-ready but still require external service setup and environment variables.
 
 ## Target Deployment
 
+- Free portfolio demo: GitHub Pages frontend
 - Frontend: Vercel
 - Backend API: Railway
 - PostgreSQL: Railway Postgres
 - Redis: Railway Redis
 - Worker: Railway service
+
+## Free GitHub Pages Frontend Demo
+
+The repository includes `.github/workflows/pages.yml`, which builds `frontend/dist` and publishes it with GitHub Pages on every push to `main` that changes frontend files or the Pages workflow.
+
+The demo URL is:
+
+```text
+https://ramiabdu.github.io/Sentineloops/
+```
+
+This is a static dashboard demo. It does not mean the backend API is deployed.
 
 ## Local Setup
 

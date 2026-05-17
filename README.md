@@ -13,15 +13,17 @@ It is built as a full-stack portfolio project with a FastAPI backend, scanner pl
 
 ## Live Demo
 
-Public demo: Not deployed yet.
+Public frontend demo: [GitHub Pages](https://ramiabdu.github.io/Sentineloops/)
 
-Deployment-ready; public demo coming soon. See [DEPLOYMENT.md](DEPLOYMENT.md) for the exact Railway and Vercel setup.
+Backend API deployment: Not deployed yet.
+
+The GitHub Pages demo is a static portfolio dashboard. Full backend deployment is prepared but still requires hosted PostgreSQL, Redis, and backend service credentials. See [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Deployment Status
 
-No real public deployment is currently configured for this repository.
+The frontend has a free GitHub Pages deployment workflow.
 
-The repository contains Docker, Railway, and Vercel configuration so the app can be deployed, but there is no public production URL in the README, GitHub repo metadata, Vercel config, Railway config, or package metadata at this time.
+The backend API, PostgreSQL, Redis, and worker are deployment-ready but not publicly deployed yet. There is no live production API URL configured in this repository.
 
 ## Screenshots
 
@@ -200,6 +202,7 @@ GitHub Actions runs on pushes and pull requests targeting `main`:
 
 Deployment configuration is prepared for:
 
+- Frontend demo: GitHub Pages
 - Frontend: Vercel
 - Backend API: Railway
 - PostgreSQL: Railway Postgres
