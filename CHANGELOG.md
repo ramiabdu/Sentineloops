@@ -8,6 +8,7 @@
 - Added frontend API URL environment configuration.
 - Added deployment, security, contribution, roadmap, and GitHub community docs.
 - Clarified that there is no current public production deployment.
+- Added a GitHub Pages workflow for the free static frontend demo; first-time Pages enablement must be completed in repository settings.
 
 ## v1.0.0
 

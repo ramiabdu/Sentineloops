@@ -13,15 +13,17 @@ It is built as a full-stack portfolio project with a FastAPI backend, scanner pl
 
 ## Live Demo
 
-Public frontend demo: [GitHub Pages](https://ramiabdu.github.io/Sentineloops/)
+Public frontend demo: GitHub Pages workflow is prepared, but Pages must be enabled once in repository settings.
+
+Target URL after enabling Pages: `https://ramiabdu.github.io/Sentineloops/`
 
 Backend API deployment: Not deployed yet.
 
-The GitHub Pages demo is a static portfolio dashboard. Full backend deployment is prepared but still requires hosted PostgreSQL, Redis, and backend service credentials. See [DEPLOYMENT.md](DEPLOYMENT.md).
+The GitHub Pages demo is intended to be a static portfolio dashboard. Full backend deployment is prepared but still requires hosted PostgreSQL, Redis, and backend service credentials. See [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Deployment Status
 
-The frontend has a free GitHub Pages deployment workflow.
+The frontend has a free GitHub Pages deployment workflow, but the repository's Pages setting still needs to be enabled manually once.
 
 The backend API, PostgreSQL, Redis, and worker are deployment-ready but not publicly deployed yet. There is no live production API URL configured in this repository.
 

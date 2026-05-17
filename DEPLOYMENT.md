@@ -2,11 +2,15 @@
 
 ## Current Deployment Status
 
-Public frontend demo: `https://ramiabdu.github.io/Sentineloops/`
+Public frontend demo: prepared, but not live until GitHub Pages is enabled once in repository settings.
+
+Target URL after enabling Pages: `https://ramiabdu.github.io/Sentineloops/`
 
 Backend API: Not deployed yet.
 
-As of 2026-05-17, this repository has a free GitHub Pages workflow for the static frontend demo. The backend API, PostgreSQL, Redis, and worker are deployment-ready but still require external service setup and environment variables.
+As of 2026-05-17, this repository has a free GitHub Pages workflow for the static frontend demo. The workflow builds successfully, but GitHub blocked automatic first-time Pages enablement from Actions with `Resource not accessible by integration`. Enable Pages manually once, then rerun the workflow.
+
+The backend API, PostgreSQL, Redis, and worker are deployment-ready but still require external service setup and environment variables.
 
 ## Target Deployment
 
@@ -20,6 +24,14 @@ As of 2026-05-17, this repository has a free GitHub Pages workflow for the stati
 ## Free GitHub Pages Frontend Demo
 
 The repository includes `.github/workflows/pages.yml`, which builds `frontend/dist` and publishes it with GitHub Pages on every push to `main` that changes frontend files or the Pages workflow.
+
+Manual one-time setup:
+
+1. Open GitHub repository settings.
+2. Go to **Pages**.
+3. Under **Build and deployment**, choose **GitHub Actions** as the source.
+4. Save the setting.
+5. Go to **Actions** and rerun the **Frontend Demo** workflow.
 
 The demo URL is:
 
