@@ -35,5 +35,5 @@ The execution roadmap is derived from the provided 30-day GitHub plan.
 ### Phase 4 — Hardening and release
 - authentication with mock bearer sessions
 - RBAC for viewer, analyst, and admin flows
-- CI/tests/lint
+- GitHub Actions CI with tests and lint
 - docs and release polish

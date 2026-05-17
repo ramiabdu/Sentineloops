@@ -171,4 +171,6 @@ Current local development uses Docker Compose with:
 - Redis 7
 - Alembic migration bootstrap on API startup
 
+GitHub Actions now validates backend lint/tests and frontend typecheck/build before changes land on `main`.
+
 Cloud deployment will evolve via Terraform modules for networking baseline, app skeleton, storage, and IAM examples as required by the spec.

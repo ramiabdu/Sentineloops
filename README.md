@@ -26,6 +26,7 @@ The current implementation establishes the platform baseline:
 - local Docker Compose stack for API, PostgreSQL, and Redis
 - frontend dashboard skeleton created with posture, findings table, account, scan, and onboarding flows
 - mock bearer authentication and role checks added for protected API routes
+- GitHub Actions CI added for backend tests/lint and frontend typecheck/build
 - architecture and decision docs updated to match the codebase
 
 ## Planned architecture
@@ -170,3 +171,7 @@ Application logs startup metadata including environment and debug mode.
 API errors use stable JSON payloads with `code` and `message` fields. Validation failures also include a `details` list for invalid request fields.
 Account, finding, and scan routes require a bearer token from `/auth/session`.
 RBAC roles are `viewer` for read-only access, `analyst` for read and scan trigger access, and `admin` for account onboarding plus scan trigger access.
+
+## CI
+
+GitHub Actions runs backend lint/tests and frontend typecheck/build on pushes and pull requests targeting `main`.
