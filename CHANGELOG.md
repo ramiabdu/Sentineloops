@@ -17,6 +17,8 @@
 - Added public user signup, password login, persisted users, and JWT bearer auth support.
 - Hardened database session rollback handling for signup/login and enabled production startup migrations.
 - Added Render-safe missing-table initialization and a temporary protected `/admin/init-db` endpoint for production debugging.
+- Rebuilt the Render backend blueprint around `rootDir: backend`, removed Alembic predeploy startup risk, and made SQLAlchemy missing-table creation the default Render path.
+- Made the users Alembic migration tolerant of databases where the `users` table was already created by startup initialization.
 
 ## v1.0.0
 

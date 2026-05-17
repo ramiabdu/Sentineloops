@@ -50,3 +50,32 @@ def test_database_initialization_falls_back_to_create_all_when_migration_fails(
     assert result.missing_tables_checked is True
     assert result.missing_tables_created is True
     assert calls == ["create_all"]
+
+
+def test_database_initialization_can_create_tables_without_running_alembic(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    calls: list[str] = []
+
+    monkeypatch.setattr(initialization, "alembic_migrations_exist", lambda: True)
+    monkeypatch.setattr(
+        initialization,
+        "run_database_migrations",
+        lambda: calls.append("migration"),
+    )
+    monkeypatch.setattr(
+        initialization,
+        "create_missing_database_tables",
+        lambda: calls.append("create_all"),
+    )
+
+    result = initialization.initialize_database(
+        run_migrations=False,
+        create_missing_tables=True,
+    )
+
+    assert result.migrations_checked is False
+    assert result.migrations_ran is False
+    assert result.missing_tables_checked is True
+    assert result.missing_tables_created is True
+    assert calls == ["create_all"]

@@ -71,7 +71,7 @@ DEBUG=false
 PORT=8000
 DATABASE_URL=postgresql+psycopg://USER:PASSWORD@HOST:PORT/DATABASE
 DATABASE_ECHO=false
-DATABASE_AUTO_MIGRATE=true
+DATABASE_AUTO_MIGRATE=false
 DATABASE_CREATE_MISSING_TABLES=true
 REDIS_URL=redis://default:PASSWORD@HOST:PORT/0
 CORS_ALLOWED_ORIGINS=https://your-vercel-domain.vercel.app
@@ -137,8 +137,9 @@ The repository includes `render.yaml` for a free backend API preview on Render:
 - Database: Render Postgres
 - Cache/queue: Render Key Value
 - Health check: `/health`
-- Startup migrations: enabled with `DATABASE_AUTO_MIGRATE=true`
-- Missing-table safety net: enabled with `DATABASE_CREATE_MISSING_TABLES=true`
+- Root directory: `backend`
+- Startup migrations: disabled by default on Render with `DATABASE_AUTO_MIGRATE=false`
+- Missing-table creation: enabled with `DATABASE_CREATE_MISSING_TABLES=true`
 
 Important limitations:
 
@@ -147,18 +148,23 @@ Important limitations:
 - Render free Postgres has platform limits and expiration behavior; check Render's current free-tier policy before relying on it.
 - The worker is not included in the free Render blueprint because Render free instances are for web services and datastores, not background workers.
 
-Render backend commands:
+Render backend settings to paste into a manually created web service:
 
-```bash
-pip install -r requirements.txt
-cd backend && pip install -r requirements.txt
-cd backend && alembic upgrade head
+```text
+Root Directory: backend
+Build Command: pip install -r requirements.txt
+Start Command: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
+Do not add a Render pre-deploy Alembic command for the free preview service. The API startup runs SQLAlchemy `create_all` safely when `DATABASE_CREATE_MISSING_TABLES=true`, which creates the `users` table needed by `POST /auth/signup`.
+
+The repository also keeps a root-level `requirements.txt` because Render may fall back to `pip install -r requirements.txt` from the repository root when a service was created manually before the Blueprint was synced. If you do not use `Root Directory: backend`, paste this start command instead:
+
+```text
 cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
 ```
 
-The repository also keeps a root-level `requirements.txt` because Render may fall back to `pip install -r requirements.txt` from the repository root when a service was created manually before the Blueprint was synced.
-
-Render-compatible manual migration command:
+Render-compatible manual migration command, only if you intentionally want Alembic from Render Shell:
 
 ```bash
 cd backend && alembic upgrade head
@@ -167,7 +173,7 @@ cd backend && alembic upgrade head
 If Render Shell is unavailable, set these environment variables and redeploy the API:
 
 ```text
-DATABASE_AUTO_MIGRATE=true
+DATABASE_AUTO_MIGRATE=false
 DATABASE_CREATE_MISSING_TABLES=true
 ```
 
@@ -209,6 +215,16 @@ Expected response:
 ```json
 {"status":"ok"}
 ```
+
+Then verify public signup:
+
+```bash
+curl -X POST https://your-render-api.onrender.com/auth/signup \
+  -H "Content-Type: application/json" \
+  -d '{"email":"finaluser@example.com","display_name":"Final User","password":"12345678","role":"viewer"}'
+```
+
+Expected status: `201 Created`. If the user already exists, expected status: `409 Conflict`.
 
 After the backend URL is live, set the frontend build variable to that URL if the dashboard starts calling backend APIs:
 
@@ -271,8 +287,11 @@ Worker:
 API fails on startup:
 
 - Check `DATABASE_URL`.
-- Confirm Railway Postgres is provisioned and reachable.
-- Check Alembic migration logs.
+- Confirm the database is provisioned and reachable.
+- On Render, confirm `Root Directory` is `backend`.
+- On Render, confirm the start command is `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
+- Confirm `DATABASE_CREATE_MISSING_TABLES=true`.
+- Leave `DATABASE_AUTO_MIGRATE=false` unless you are intentionally running Alembic.
 
 Frontend cannot reach API:
 

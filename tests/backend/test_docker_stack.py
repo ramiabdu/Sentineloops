@@ -49,15 +49,15 @@ def test_render_blueprint_uses_backend_python_commands():
     render_text = (root / "render.yaml").read_text()
 
     assert "runtime: python" in render_text
-    assert "buildCommand: cd backend && pip install -r requirements.txt" in render_text
-    assert "preDeployCommand: cd backend && alembic upgrade head" in render_text
+    assert "rootDir: backend" in render_text
+    assert "buildCommand: pip install -r requirements.txt" in render_text
+    assert "preDeployCommand:" not in render_text
     assert "DATABASE_AUTO_MIGRATE" in render_text
+    assert 'DATABASE_AUTO_MIGRATE\n        value: "false"' in render_text
     assert "DATABASE_CREATE_MISSING_TABLES" in render_text
-    assert 'value: "true"' in render_text
-    assert (
-        "startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
-        in render_text
-    )
+    assert 'DATABASE_CREATE_MISSING_TABLES\n        value: "true"' in render_text
+    assert "startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT" in render_text
+    assert "cd backend &&" not in render_text
     assert "dockerfilePath" not in render_text
 
 

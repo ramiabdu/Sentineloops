@@ -85,6 +85,29 @@ def test_signup_accepts_render_smoke_test_payload_without_display_name():
     assert response.json()["display_name"] == "finaltest"
 
 
+def test_signup_accepts_render_final_payload():
+    client = _build_database_client()
+
+    response = client.post(
+        "/auth/signup",
+        json={
+            "email": "finaluser@example.com",
+            "display_name": "Final User",
+            "password": "12345678",
+            "role": "viewer",
+        },
+    )
+
+    assert response.status_code == 201
+    body = response.json()
+    assert body == {
+        "subject": body["subject"],
+        "email": "finaluser@example.com",
+        "display_name": "Final User",
+        "role": "viewer",
+    }
+
+
 def test_signup_rejects_duplicate_email():
     client = _build_database_client()
 

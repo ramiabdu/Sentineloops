@@ -44,7 +44,7 @@ class Settings(BaseSettings):
 
     @property
     def should_run_database_migrations(self) -> bool:
-        return self.DATABASE_AUTO_MIGRATE or self.environment_name == "production"
+        return self.DATABASE_AUTO_MIGRATE
 
     @property
     def should_create_missing_database_tables(self) -> bool:

@@ -37,8 +37,8 @@ def test_settings_normalizes_hosted_postgres_urls():
     assert explicit_driver.DATABASE_URL == "postgresql+psycopg://user:pass@host:5432/sentinelops"
 
 
-def test_settings_auto_migrates_production_databases():
-    assert Settings(ENVIRONMENT="production").should_run_database_migrations is True
+def test_settings_only_runs_migrations_when_explicitly_enabled():
+    assert Settings(ENVIRONMENT="production").should_run_database_migrations is False
     assert Settings(DATABASE_AUTO_MIGRATE=True).should_run_database_migrations is True
     assert (
         Settings(ENVIRONMENT="development", DATABASE_AUTO_MIGRATE=False)

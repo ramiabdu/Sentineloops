@@ -2,12 +2,12 @@ services:
   - type: web
     name: sentinelops-api
     runtime: python
+    rootDir: backend
     plan: free
     region: oregon
     autoDeployTrigger: commit
-    buildCommand: cd backend && pip install -r requirements.txt
-    preDeployCommand: cd backend && alembic upgrade head
-    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
       - key: PYTHON_VERSION
@@ -23,7 +23,7 @@ services:
       - key: DATABASE_ECHO
         value: "false"
       - key: DATABASE_AUTO_MIGRATE
-        value: "true"
+        value: "false"
       - key: DATABASE_CREATE_MISSING_TABLES
         value: "true"
       - key: REDIS_URL
