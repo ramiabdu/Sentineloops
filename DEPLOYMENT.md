@@ -4,21 +4,20 @@
 
 Public frontend demo: live at [https://ramiabdu.github.io/Sentineloops/](https://ramiabdu.github.io/Sentineloops/)
 
-Backend API: Not deployed yet. There is no public production API URL in this repository.
+Backend API: live at [https://sentineloops.onrender.com/docs](https://sentineloops.onrender.com/docs)
 
-As of 2026-05-17, the frontend static demo is deployed with GitHub Pages. The backend API, PostgreSQL, Redis, and worker are deployment-ready but still require an external hosting account and production environment variables.
+As of 2026-05-17, the frontend static demo is deployed with GitHub Pages and the backend API is deployed on Render with PostgreSQL-backed signup/login persistence and JWT authentication.
 
-No secrets are committed. Do not claim a live backend until `/health` returns successfully from a public backend domain.
+No secrets are committed. Treat the Render deployment as a portfolio/demo environment, not a production SLA.
 
 ## Target Deployment
 
 - Free portfolio demo: GitHub Pages frontend
 - Frontend: Vercel
-- Backend API: Railway
-- PostgreSQL: Railway Postgres
-- Redis: Railway Redis
-- Worker: Railway service
-- Free backend preview option: Render web service with Render Postgres and Render Key Value
+- Backend API: Render web service
+- PostgreSQL: Render Postgres
+- Redis: Render Key Value or Railway Redis for worker-backed scans
+- Worker: Railway service or a separate background worker host
 
 ## Free GitHub Pages Frontend Demo
 
@@ -30,7 +29,7 @@ The demo URL is:
 https://ramiabdu.github.io/Sentineloops/
 ```
 
-This is a static dashboard demo. It does not mean the backend API is deployed.
+This is a static dashboard demo. The production API is deployed separately on Render at `https://sentineloops.onrender.com`.
 
 ## Local Setup
 

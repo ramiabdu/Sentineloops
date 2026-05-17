@@ -5,27 +5,85 @@
 ![Python](https://img.shields.io/badge/python-3.12+-3776ab)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688)
 ![React](https://img.shields.io/badge/React-19-61dafb)
+![Render](https://img.shields.io/badge/API-Render%20deployed-46e3b7)
+![PostgreSQL](https://img.shields.io/badge/database-PostgreSQL-336791)
+![Auth](https://img.shields.io/badge/auth-JWT-111827)
 ![License](https://img.shields.io/badge/license-MIT-17372e)
 
 SentinelOps is a production-style Cloud Security Posture Management (CSPM) platform for detecting, analyzing, and prioritizing cloud security misconfigurations across cloud accounts.
 
-It is built as a full-stack portfolio project with a FastAPI backend, scanner plugin architecture, PostgreSQL persistence, queued worker execution, responsive React dashboard, auth/RBAC foundation, Docker local runtime, CI, release assets, and deployment-ready configuration.
+It is built as a full-stack portfolio project with a deployed FastAPI backend, PostgreSQL persistence, JWT authentication, scanner plugin architecture, queued worker execution, responsive React dashboard, Docker local runtime, CI, release assets, and production-ready deployment configuration.
 
-## Live Demo
+## Live API
 
-Public frontend demo: [https://ramiabdu.github.io/Sentineloops/](https://ramiabdu.github.io/Sentineloops/)
+- Swagger/OpenAPI docs: [https://sentineloops.onrender.com/docs](https://sentineloops.onrender.com/docs)
+- Health check: [https://sentineloops.onrender.com/health](https://sentineloops.onrender.com/health)
+- Public frontend demo: [https://ramiabdu.github.io/Sentineloops/](https://ramiabdu.github.io/Sentineloops/)
 
-Backend API deployment: Not deployed yet.
+The Render API exposes interactive Swagger documentation for testing signup, login, and authenticated endpoints.
 
-The GitHub Pages demo is a static portfolio dashboard. The backend API is deployment-ready, but it still requires a hosted backend service, PostgreSQL, Redis, and production environment variables. See [DEPLOYMENT.md](DEPLOYMENT.md).
+## Deployment & API Verification
 
-## Deployment Status
+The backend API is fully deployed on Render at `https://sentineloops.onrender.com`. PostgreSQL database integration is working, JWT authentication is implemented and verified, and Swagger/OpenAPI documentation is available publicly through the live `/docs` endpoint.
 
-The frontend static demo is live on GitHub Pages.
+Current production status:
 
-The backend API, PostgreSQL, Redis, and worker are deployment-ready but not publicly deployed yet. There is no live production API URL configured in this repository.
+- Backend API: deployed on Render
+- Database: PostgreSQL connected and used by signup/login persistence
+- Authentication: JWT bearer authentication implemented and verified
+- API documentation: Swagger/OpenAPI available at `/docs`
+- Frontend demo: deployed on GitHub Pages
+- CI: backend lint/tests and frontend build checks run in GitHub Actions
+
+Production features:
+
+- [x] FastAPI backend deployed on Render
+- [x] PostgreSQL database connected
+- [x] JWT Authentication
+- [x] Protected routes
+- [x] Swagger/OpenAPI docs
+- [x] Signup/Login endpoints
+- [x] Production environment variables configured
+
+Example API calls:
+
+```bash
+curl https://sentineloops.onrender.com/health
+```
+
+```bash
+curl -X POST https://sentineloops.onrender.com/auth/signup \
+  -H "Content-Type: application/json" \
+  -d '{"email":"finaluser@example.com","display_name":"Final User","password":"12345678","role":"viewer"}'
+```
+
+```bash
+curl -X POST https://sentineloops.onrender.com/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"finaluser@example.com","password":"12345678"}'
+```
 
 ## Screenshots
+
+### Production API Verification
+
+<img src="docs/assets/render-swagger-signup-request.jpeg" alt="Swagger signup request against the deployed Render API" width="100%">
+
+<p><em>Swagger UI sends a public signup request to the deployed Render backend at <code>/auth/signup</code>.</em></p>
+
+<img src="docs/assets/render-swagger-signup-201.jpeg" alt="Successful signup response with 201 Created from the deployed Render API" width="100%">
+
+<p><em>Successful signup response from Render: the API returns <code>201 Created</code> and persists the user through PostgreSQL.</em></p>
+
+<img src="docs/assets/render-swagger-login-request.jpeg" alt="Swagger login request against the deployed Render API" width="100%">
+
+<p><em>Swagger UI submits login credentials to the deployed <code>/auth/login</code> endpoint.</em></p>
+
+<img src="docs/assets/render-swagger-login-200-jwt.jpeg" alt="Successful login response with JWT bearer token from the deployed Render API" width="100%">
+
+<p><em>Successful login response from Render: the API returns <code>200 OK</code>, issues a JWT bearer token, and provides the authenticated user payload used for protected requests.</em></p>
+
+### Product Dashboard
 
 ![SentinelOps demo](docs/assets/sentinelops-demo.gif)
 
