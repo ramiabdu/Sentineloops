@@ -94,7 +94,7 @@ Infrastructure and quality:
 
 - Docker and Docker Compose
 - Railway-ready backend and worker commands
-- Render-ready free API blueprint
+- Render-ready free API blueprint with backend `requirements.txt`
 - Vercel-ready frontend config
 - Terraform baseline modules
 - GitHub Actions CI

@@ -42,3 +42,32 @@ def test_dockerignore_excludes_local_env_files():
 
     assert ".env" in dockerignore_text
     assert "backend/.env" in dockerignore_text
+
+
+def test_render_blueprint_uses_backend_python_commands():
+    root = Path(__file__).resolve().parents[2]
+    render_text = (root / "render.yaml").read_text()
+
+    assert "runtime: python" in render_text
+    assert "buildCommand: cd backend && pip install -r requirements.txt" in render_text
+    assert "preDeployCommand: cd backend && alembic upgrade head" in render_text
+    assert (
+        "startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+        in render_text
+    )
+    assert "dockerfilePath" not in render_text
+
+
+def test_backend_requirements_matches_runtime_dependencies():
+    root = Path(__file__).resolve().parents[2]
+    requirements_text = (root / "backend" / "requirements.txt").read_text()
+
+    for dependency in [
+        "alembic",
+        "fastapi",
+        "pydantic-settings",
+        "psycopg[binary]",
+        "sqlalchemy",
+        "uvicorn[standard]",
+    ]:
+        assert dependency in requirements_text

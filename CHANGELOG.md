@@ -11,6 +11,8 @@
 - Added a GitHub Pages workflow for the free static frontend demo.
 - Added a Render backend preview blueprint for a free API deployment path.
 - Normalized hosted Postgres URLs for production providers that expose `postgresql://` or `postgres://` connection strings.
+- Switched the Render backend blueprint to the Python runtime with explicit backend build and start commands.
+- Added `backend/requirements.txt` for Render's Python dependency installation.
 
 ## v1.0.0
 

@@ -130,7 +130,7 @@ Set the backend and worker environment variables listed above. Use Railway's gen
 
 The repository includes `render.yaml` for a free backend API preview on Render:
 
-- Web service: FastAPI backend from `backend/Dockerfile`
+- Web service: FastAPI backend with Render's Python runtime
 - Database: Render Postgres
 - Cache/queue: Render Key Value
 - Health check: `/health`
@@ -142,11 +142,19 @@ Important limitations:
 - Render free Postgres has platform limits and expiration behavior; check Render's current free-tier policy before relying on it.
 - The worker is not included in the free Render blueprint because Render free instances are for web services and datastores, not background workers.
 
+Render backend commands:
+
+```bash
+cd backend && pip install -r requirements.txt
+cd backend && alembic upgrade head
+cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
 Manual deployment steps:
 
 1. Sign in to Render.
 2. Create a new Blueprint from this GitHub repository.
-3. Render will read `render.yaml`.
+3. Render will read `render.yaml` from the repository root.
 4. Set `CORS_ALLOWED_ORIGINS` to:
 
 ```text

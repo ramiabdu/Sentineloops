@@ -1,14 +1,17 @@
 services:
   - type: web
     name: sentinelops-api
-    runtime: docker
+    runtime: python
     plan: free
     region: oregon
     autoDeployTrigger: commit
-    dockerContext: .
-    dockerfilePath: ./backend/Dockerfile
+    buildCommand: cd backend && pip install -r requirements.txt
+    preDeployCommand: cd backend && alembic upgrade head
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.13
       - key: ENVIRONMENT
         value: production
       - key: DEBUG
