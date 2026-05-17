@@ -28,6 +28,19 @@ The current implementation establishes the platform baseline:
 - mock bearer authentication and role checks added for protected API routes
 - GitHub Actions CI added for backend tests/lint and frontend typecheck/build
 - architecture and decision docs updated to match the codebase
+- final demo screenshots and release notes prepared for `v1.0.0`
+
+## Demo
+
+![SentinelOps demo](docs/assets/sentinelops-demo.gif)
+
+| Overview | Findings |
+| --- | --- |
+| ![Dashboard overview](docs/assets/sentinelops-overview.png) | ![Findings table and detail panel](docs/assets/sentinelops-findings.png) |
+
+Mobile layout:
+
+![Mobile dashboard](docs/assets/sentinelops-mobile.png)
 
 ## Planned architecture
 
@@ -80,7 +93,6 @@ sentinelops/
 ├── docker/
 ├── docs/
 ├── frontend/
-├── infra/
 ├── scripts/
 ├── terraform/
 │   └── modules/
@@ -145,7 +157,9 @@ The repository aims to satisfy the provided definition of done:
 
 ## Next implementation milestones
 
-1. CI hardening and dashboard expansion
+1. Persistent users and real identity provider integration
+2. Additional scanners for old access keys and storage encryption
+3. Production deployment wiring and alert delivery
 
 ## License
 
@@ -164,6 +178,7 @@ MIT
 - `GET /scans`
 - `POST /scans`
 - `GET /scans/{scan_id}`
+- `GET /scans/{scan_id}/status`
 
 ## Runtime behavior
 
@@ -175,3 +190,7 @@ RBAC roles are `viewer` for read-only access, `analyst` for read and scan trigge
 ## CI
 
 GitHub Actions runs backend lint/tests and frontend typecheck/build on pushes and pull requests targeting `main`.
+
+## Release
+
+The `v1.0.0` release package is summarized in `docs/release-v1.0.0.md`.

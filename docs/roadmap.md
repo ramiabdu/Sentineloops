@@ -36,4 +36,4 @@ The execution roadmap is derived from the provided 30-day GitHub plan.
 - authentication with mock bearer sessions
 - RBAC for viewer, analyst, and admin flows
 - GitHub Actions CI with tests and lint
-- docs and release polish
+- final docs, screenshots, demo GIF, and `v1.0.0` release polish

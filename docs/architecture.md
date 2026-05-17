@@ -25,10 +25,12 @@ backend/app/
 │   ├── router.py
 │   └── routes/
 │       ├── accounts.py
+│       ├── auth.py
 │       ├── findings.py
 │       ├── health.py
 │       └── scans.py
 ├── core/
+│   ├── auth.py
 │   ├── config.py
 │   ├── errors.py
 │   ├── exception_handlers.py
@@ -53,6 +55,7 @@ backend/app/
 │   └── scans.py
 └── schemas/
     ├── account.py
+    ├── auth.py
     ├── errors.py
     ├── finding.py
     ├── health.py
