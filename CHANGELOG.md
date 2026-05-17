@@ -7,8 +7,10 @@
 - Added backend CORS and Redis environment configuration.
 - Added frontend API URL environment configuration.
 - Added deployment, security, contribution, roadmap, and GitHub community docs.
-- Clarified that there is no current public production deployment.
-- Added a GitHub Pages workflow for the free static frontend demo; first-time Pages enablement must be completed in repository settings.
+- Clarified that the frontend demo is live on GitHub Pages and the backend API is not deployed yet.
+- Added a GitHub Pages workflow for the free static frontend demo.
+- Added a Render backend preview blueprint for a free API deployment path.
+- Normalized hosted Postgres URLs for production providers that expose `postgresql://` or `postgres://` connection strings.
 
 ## v1.0.0
 

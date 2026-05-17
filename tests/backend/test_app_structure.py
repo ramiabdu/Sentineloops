@@ -1,6 +1,6 @@
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.config import settings
+from app.core.config import Settings, settings
 from app.main import create_application
 
 
@@ -22,3 +22,13 @@ def test_application_registers_cors_middleware():
 
     assert any(middleware.cls is CORSMiddleware for middleware in app.user_middleware)
     assert "http://localhost:5173" in settings.cors_allowed_origins
+
+
+def test_settings_normalizes_hosted_postgres_urls():
+    render_style = Settings(DATABASE_URL="postgresql://user:pass@host:5432/sentinelops")
+    heroku_style = Settings(DATABASE_URL="postgres://user:pass@host:5432/sentinelops")
+    explicit_driver = Settings(DATABASE_URL="postgresql+psycopg://user:pass@host:5432/sentinelops")
+
+    assert render_style.DATABASE_URL == "postgresql+psycopg://user:pass@host:5432/sentinelops"
+    assert heroku_style.DATABASE_URL == "postgresql+psycopg://user:pass@host:5432/sentinelops"
+    assert explicit_driver.DATABASE_URL == "postgresql+psycopg://user:pass@host:5432/sentinelops"

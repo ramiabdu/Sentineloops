@@ -1,0 +1,53 @@
+services:
+  - type: web
+    name: sentinelops-api
+    runtime: docker
+    plan: free
+    region: oregon
+    autoDeployTrigger: commit
+    dockerContext: .
+    dockerfilePath: ./backend/Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sentinelops-postgres
+          property: connectionString
+      - key: DATABASE_ECHO
+        value: "false"
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: sentinelops-redis
+          property: connectionString
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+      - key: AUTH_SECRET_KEY
+        generateValue: true
+      - key: AUTH_TOKEN_TTL_MINUTES
+        value: "60"
+      - key: AUTH_DEMO_EMAIL
+        value: analyst@sentinelops.local
+      - key: AUTH_DEMO_DISPLAY_NAME
+        value: SentinelOps Analyst
+      - key: AUTH_DEMO_ROLE
+        value: admin
+
+  - type: keyvalue
+    name: sentinelops-redis
+    plan: free
+    region: oregon
+    ipAllowList: []
+    maxmemoryPolicy: noeviction
+
+databases:
+  - name: sentinelops-postgres
+    plan: free
+    region: oregon
+    databaseName: sentinelops
+    user: sentinelops
+    ipAllowList: []

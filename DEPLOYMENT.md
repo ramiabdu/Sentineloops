@@ -2,15 +2,13 @@
 
 ## Current Deployment Status
 
-Public frontend demo: prepared, but not live until GitHub Pages is enabled once in repository settings.
+Public frontend demo: live at [https://ramiabdu.github.io/Sentineloops/](https://ramiabdu.github.io/Sentineloops/)
 
-Target URL after enabling Pages: `https://ramiabdu.github.io/Sentineloops/`
+Backend API: Not deployed yet. There is no public production API URL in this repository.
 
-Backend API: Not deployed yet.
+As of 2026-05-17, the frontend static demo is deployed with GitHub Pages. The backend API, PostgreSQL, Redis, and worker are deployment-ready but still require an external hosting account and production environment variables.
 
-As of 2026-05-17, this repository has a free GitHub Pages workflow for the static frontend demo. The workflow builds successfully, but GitHub blocked automatic first-time Pages enablement from Actions with `Resource not accessible by integration`. Enable Pages manually once, then rerun the workflow.
-
-The backend API, PostgreSQL, Redis, and worker are deployment-ready but still require external service setup and environment variables.
+No secrets are committed. Do not claim a live backend until `/health` returns successfully from a public backend domain.
 
 ## Target Deployment
 
@@ -20,18 +18,11 @@ The backend API, PostgreSQL, Redis, and worker are deployment-ready but still re
 - PostgreSQL: Railway Postgres
 - Redis: Railway Redis
 - Worker: Railway service
+- Free backend preview option: Render web service with Render Postgres and Render Key Value
 
 ## Free GitHub Pages Frontend Demo
 
 The repository includes `.github/workflows/pages.yml`, which builds `frontend/dist` and publishes it with GitHub Pages on every push to `main` that changes frontend files or the Pages workflow.
-
-Manual one-time setup:
-
-1. Open GitHub repository settings.
-2. Go to **Pages**.
-3. Under **Build and deployment**, choose **GitHub Actions** as the source.
-4. Save the setting.
-5. Go to **Actions** and rerun the **Frontend Demo** workflow.
 
 The demo URL is:
 
@@ -134,6 +125,53 @@ cd /app && PYTHONPATH=/app/backend python -m workers.app.main
 ```
 
 Set the backend and worker environment variables listed above. Use Railway's generated PostgreSQL and Redis connection strings.
+
+## Free Render Backend Preview
+
+The repository includes `render.yaml` for a free backend API preview on Render:
+
+- Web service: FastAPI backend from `backend/Dockerfile`
+- Database: Render Postgres
+- Cache/queue: Render Key Value
+- Health check: `/health`
+
+Important limitations:
+
+- This is a portfolio preview path, not a production SLA.
+- Render free web services can sleep when idle.
+- Render free Postgres has platform limits and expiration behavior; check Render's current free-tier policy before relying on it.
+- The worker is not included in the free Render blueprint because Render free instances are for web services and datastores, not background workers.
+
+Manual deployment steps:
+
+1. Sign in to Render.
+2. Create a new Blueprint from this GitHub repository.
+3. Render will read `render.yaml`.
+4. Set `CORS_ALLOWED_ORIGINS` to:
+
+```text
+https://ramiabdu.github.io
+```
+
+5. Deploy the Blueprint.
+6. Open the generated Render API URL.
+7. Verify:
+
+```bash
+curl https://your-render-api.onrender.com/health
+```
+
+Expected response:
+
+```json
+{"status":"ok"}
+```
+
+After the backend URL is live, set the frontend build variable to that URL if the dashboard starts calling backend APIs:
+
+```text
+VITE_API_BASE_URL=https://your-render-api.onrender.com
+```
 
 ## Vercel Deployment
 

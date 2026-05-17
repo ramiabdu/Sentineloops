@@ -13,17 +13,15 @@ It is built as a full-stack portfolio project with a FastAPI backend, scanner pl
 
 ## Live Demo
 
-Public frontend demo: GitHub Pages workflow is prepared, but Pages must be enabled once in repository settings.
-
-Target URL after enabling Pages: `https://ramiabdu.github.io/Sentineloops/`
+Public frontend demo: [https://ramiabdu.github.io/Sentineloops/](https://ramiabdu.github.io/Sentineloops/)
 
 Backend API deployment: Not deployed yet.
 
-The GitHub Pages demo is intended to be a static portfolio dashboard. Full backend deployment is prepared but still requires hosted PostgreSQL, Redis, and backend service credentials. See [DEPLOYMENT.md](DEPLOYMENT.md).
+The GitHub Pages demo is a static portfolio dashboard. The backend API is deployment-ready, but it still requires a hosted backend service, PostgreSQL, Redis, and production environment variables. See [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Deployment Status
 
-The frontend has a free GitHub Pages deployment workflow, but the repository's Pages setting still needs to be enabled manually once.
+The frontend static demo is live on GitHub Pages.
 
 The backend API, PostgreSQL, Redis, and worker are deployment-ready but not publicly deployed yet. There is no live production API URL configured in this repository.
 
@@ -43,11 +41,11 @@ Mobile layout:
 
 ```mermaid
 flowchart LR
-    User["Security operator"] --> Frontend["React dashboard on Vercel"]
-    Frontend --> API["FastAPI backend on Railway"]
-    API --> Postgres["Railway PostgreSQL"]
-    API --> Redis["Railway Redis"]
-    Worker["Railway worker service"] --> Redis
+    User["Security operator"] --> Frontend["React dashboard on GitHub Pages or Vercel"]
+    Frontend --> API["FastAPI backend on Railway or Render"]
+    API --> Postgres["Managed PostgreSQL"]
+    API --> Redis["Managed Redis or Key Value"]
+    Worker["Worker service"] --> Redis
     Worker --> Postgres
     Worker --> ScannerEngine["Scanner plugin runner"]
     ScannerEngine --> AWS["AWS account APIs"]
@@ -96,6 +94,7 @@ Infrastructure and quality:
 
 - Docker and Docker Compose
 - Railway-ready backend and worker commands
+- Render-ready free API blueprint
 - Vercel-ready frontend config
 - Terraform baseline modules
 - GitHub Actions CI
@@ -113,6 +112,9 @@ Infrastructure and quality:
 |-- docs/               # architecture, decisions, release notes, threat model
 |-- tests/              # backend tests
 |-- .github/            # CI and contribution templates
+|-- render.yaml         # Render free backend preview blueprint
+|-- railway.json        # Railway backend deployment config
+|-- vercel.json         # Vercel frontend deployment config
 |-- DEPLOYMENT.md
 |-- SECURITY.md
 |-- CONTRIBUTING.md
@@ -204,12 +206,13 @@ GitHub Actions runs on pushes and pull requests targeting `main`:
 
 Deployment configuration is prepared for:
 
-- Frontend demo: GitHub Pages
+- Frontend demo: GitHub Pages, currently live at `https://ramiabdu.github.io/Sentineloops/`
 - Frontend: Vercel
 - Backend API: Railway
 - PostgreSQL: Railway Postgres
 - Redis: Railway Redis
 - Worker: Railway service
+- Free backend preview: Render web service with Render Postgres and Render Key Value
 
 ## Security Notes
 
@@ -226,7 +229,7 @@ See [SECURITY.md](SECURITY.md) and [docs/threat-model.md](docs/threat-model.md).
 
 Near-term:
 
-- Deploy public demo on Railway and Vercel
+- Deploy public backend API and connect it to the frontend demo
 - Add real identity provider integration
 - Add old access key and missing encryption scanners
 - Add audit log persistence
