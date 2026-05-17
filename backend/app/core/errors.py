@@ -22,3 +22,9 @@ class NotFoundError(AppError):
     status_code = status.HTTP_404_NOT_FOUND
     code = "not_found"
     message = "The requested resource was not found."
+
+
+class AuthenticationError(AppError):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    code = "authentication_failed"
+    message = "Valid bearer authentication is required."

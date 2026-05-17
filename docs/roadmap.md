@@ -33,7 +33,7 @@ The execution roadmap is derived from the provided 30-day GitHub plan.
 - finding details drawer/page
 
 ### Phase 4 — Hardening and release
-- authentication
+- authentication with mock bearer sessions
 - RBAC
 - CI/tests/lint
 - docs and release polish

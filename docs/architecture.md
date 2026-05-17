@@ -78,13 +78,14 @@ Current role:
 - central route aggregation via `api/router.py`
 - route modules under `api/routes/`
 - request validation through Pydantic schemas
+- mock bearer session authentication via `/auth/session` and `/auth/me`
 - findings list/detail APIs with account, scan, severity, status, and scanner filters
 - scan trigger/status APIs for queueing and inspecting scan jobs with finding counts
 - standardized JSON error responses
 - response contracts in `schemas/`
 
 Planned growth:
-- authentication/authorization
+- role-based authorization
 - pagination/filtering
 
 ### Service layer
@@ -144,7 +145,8 @@ Planned:
 10. `workers/app/main.py` polls for queued scans and delegates execution to backend services.
 11. `services/scans.py` builds scan status snapshots with lifecycle timing and finding counts.
 12. `db/session.py` owns engine/session creation for repository usage.
-13. Alembic migrations bootstrap the schema before API startup in Docker.
+13. `core/auth.py` validates mock bearer session tokens for protected API routes.
+14. Alembic migrations bootstrap the schema before API startup in Docker.
 
 ## Async execution direction
 

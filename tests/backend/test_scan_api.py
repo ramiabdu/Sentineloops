@@ -8,6 +8,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
+from app.core.auth import CurrentUser, get_current_user
 from app.db import get_db
 from app.main import create_application
 from app.models import Base
@@ -34,7 +35,16 @@ def client() -> Generator[TestClient, None, None]:
         with session_factory() as session:
             yield session
 
+    def override_current_user() -> CurrentUser:
+        return CurrentUser(
+            subject="test-user",
+            email="test@example.com",
+            display_name="Test User",
+            role="admin",
+        )
+
     app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_current_user] = override_current_user
 
     with TestClient(app) as test_client:
         yield test_client
