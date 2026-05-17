@@ -8,14 +8,14 @@ Dashboard UI for SentinelOps.
 - `npm run build` type-checks and builds the app.
 - `npm run test` runs TypeScript checks.
 
-## Initial screens
+## Dashboard experience
 
-- posture metric cards
-- accounts page with onboarding form
-- priority findings table
-- filterable findings table
-- finding details panel
-- severity charts
-- risk cards
-- cloud account inventory
-- scan activity panel
+- Posture metric cards
+- Accounts page with onboarding form
+- Priority findings table
+- Filterable findings table
+- Finding details panel
+- Severity charts
+- Risk cards
+- Cloud account inventory
+- Scan activity panel

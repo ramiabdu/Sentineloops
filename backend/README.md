@@ -2,12 +2,20 @@
 
 FastAPI application layer for SentinelOps.
 
-## Planned responsibilities
-- account onboarding APIs
-- scan lifecycle APIs (trigger/status summaries implemented)
-- findings retrieval APIs (implemented)
-- authentication and RBAC (mock bearer sessions and role checks implemented)
-- risk scoring orchestration (implemented for persisted scanner findings)
-- scan execution orchestration (implemented for queued worker scans)
-- finding deduplication (implemented with first/last seen and occurrence tracking)
-- persistence via repositories
+## Responsibilities
+
+- Account onboarding APIs
+- Scan trigger, lifecycle, and status APIs
+- Findings retrieval APIs with filters
+- Mock bearer authentication and RBAC route checks
+- Risk scoring for persisted scanner findings
+- Queued scan execution orchestration
+- Finding deduplication with first/last seen and occurrence tracking
+- SQLAlchemy repositories and Alembic migrations
+
+## Local checks
+
+```bash
+python -m pytest ../tests/backend
+python -m ruff check app ../tests/backend
+```

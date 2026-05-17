@@ -42,4 +42,4 @@ Validated locally before release:
 
 ## Release Tag
 
-This release is intended to be tagged as `v1.0.0`.
+This release is tagged as `v1.0.0`.

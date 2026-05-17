@@ -93,7 +93,7 @@ Planned growth:
 - pagination/filtering
 
 ### Service layer
-Business use cases will live here:
+Business use cases live here:
 - onboarding accounts
 - persisting scanner findings
 - deduplicating repeated scanner observations with first/last seen tracking
@@ -104,7 +104,7 @@ Business use cases will live here:
 - listing and triaging findings
 
 ### Repository layer
-Persistence boundaries will live here:
+Persistence boundaries live here:
 - accounts repository
 - findings repository
 - scans repository
@@ -119,7 +119,7 @@ Implemented role:
 - AWS security group open-port scanner using a client protocol
 - AWS IAM user without MFA scanner using a client protocol
 
-Concrete cloud checks will live here:
+Planned cloud checks:
 - access key age scanner
 - storage encryption scanner
 
@@ -161,7 +161,7 @@ The worker execution model now supports a polling loop that claims queued scans,
 - least privilege by default
 - secure configuration defaults
 - secrets never committed
-- JWT or equivalent auth
+- bearer token auth with a path toward persistent identity
 - auditable state-changing actions
 - rate limiting at API boundary
 

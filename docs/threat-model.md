@@ -10,7 +10,7 @@ Identify the main security risks to SentinelOps as a cloud security platform.
 - findings and risk scores
 - access credentials and tokens
 - audit logs
-- user sessions / JWTs
+- user sessions / bearer tokens
 - scanner execution results
 
 ## Trust boundaries
@@ -24,7 +24,7 @@ Identify the main security risks to SentinelOps as a cloud security platform.
 ## Primary threats
 
 ### Secrets exposure
-Risk: leaked cloud credentials, JWT secrets, webhook tokens.
+Risk: leaked cloud credentials, token-signing secrets, webhook tokens.
 Mitigation:
 - `.env` excluded from git
 - secret manager strategy documented
@@ -34,8 +34,8 @@ Mitigation:
 ### Broken access control
 Risk: one tenant/operator viewing or modifying unauthorized data.
 Mitigation:
-- JWT auth
-- RBAC
+- bearer token auth
+- RBAC route checks
 - explicit authorization checks in service layer
 - audit logging for sensitive actions
 
@@ -71,7 +71,7 @@ Mitigation:
 ## Secure defaults checklist
 
 - deny-by-default authorization model
-- strong secret key requirements
+- strong production secret key requirements
 - production config separation
 - explicit CORS configuration
 - structured logs with sensitive field redaction

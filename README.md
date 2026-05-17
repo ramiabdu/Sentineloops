@@ -1,8 +1,23 @@
 # SentinelOps
 
+[![CI](https://github.com/ramiabdu/Sentineloops/actions/workflows/ci.yml/badge.svg)](https://github.com/ramiabdu/Sentineloops/actions/workflows/ci.yml)
+![Release](https://img.shields.io/badge/release-v1.0.0-1b7c5e)
+![Python](https://img.shields.io/badge/python-3.12+-3776ab)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688)
+![React](https://img.shields.io/badge/React-19-61dafb)
+![License](https://img.shields.io/badge/license-MIT-17372e)
+
 SentinelOps is a production-style **Cloud Security Posture Management (CSPM)** MVP designed to detect, prioritize, and manage cloud security misconfigurations across multiple cloud accounts.
 
 This repository is intentionally structured as a **monorepo** so backend, frontend, workers, infrastructure, and documentation evolve together.
+
+## At A Glance
+
+- **Backend:** FastAPI, SQLAlchemy, Alembic, PostgreSQL, Redis-ready worker runtime
+- **Frontend:** React, TypeScript, Vite, responsive security dashboard
+- **Security workflow:** auth/RBAC, scanner plugins, risk scoring, deduplication, scan status tracking
+- **Quality:** 88 backend tests, frontend typecheck/build, GitHub Actions CI
+- **Release:** `v1.0.0` with screenshots, demo GIF, and release notes
 
 ## Why this project exists
 
@@ -42,7 +57,7 @@ Mobile layout:
 
 ![Mobile dashboard](docs/assets/sentinelops-mobile.png)
 
-## Planned architecture
+## Architecture
 
 ```text
 sentinelops/
@@ -56,7 +71,7 @@ sentinelops/
 └── .github/workflows/  # CI pipelines
 ```
 
-## Tech direction
+## Tech Stack
 
 ### Backend
 - Python 3.12+
@@ -116,7 +131,7 @@ Start with:
 - `docs/decisions.md`
 - `docs/roadmap.md`
 
-### 3) Local development
+### 3) Local development stack
 
 ```bash
 make bootstrap
@@ -126,14 +141,28 @@ make up
 
 Dockerized local runtime starts the backend API with PostgreSQL and Redis.
 
+### 4) Local verification
+
+```bash
+cd backend
+python -m pytest ../tests/backend
+python -m ruff check app ../tests/backend
+
+cd ../frontend
+npm run test
+npm run build
+```
+
 ## MVP scope from specification
 
 The target MVP includes multi account onboarding, a security scanning engine, findings persistence, risk scoring, REST APIs, background workers, dashboard UI, auth/RBAC, alerts, audit logs, CI/CD, local Docker, Terraform, and professional documentation.
 
-Required scanners include:
-- public S3 buckets (scanner logic implemented)
-- open security groups (`0.0.0.0/0`) (scanner logic implemented)
-- IAM users without MFA (scanner logic implemented)
+Implemented scanners:
+- public S3 buckets
+- open security groups (`0.0.0.0/0`)
+- IAM users without MFA
+
+Planned next scanners:
 - old access keys
 - missing storage encryption
 
@@ -161,9 +190,6 @@ The repository aims to satisfy the provided definition of done:
 2. Additional scanners for old access keys and storage encryption
 3. Production deployment wiring and alert delivery
 
-## License
-
-MIT
 ## Current endpoints
 
 - `/`
@@ -193,4 +219,8 @@ GitHub Actions runs backend lint/tests and frontend typecheck/build on pushes an
 
 ## Release
 
-The `v1.0.0` release package is summarized in `docs/release-v1.0.0.md`.
+The [`v1.0.0`](https://github.com/ramiabdu/Sentineloops/tree/v1.0.0) release package is summarized in `docs/release-v1.0.0.md`.
+
+## License
+
+MIT
